@@ -1,0 +1,17 @@
+﻿using Auth_Api.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+
+
+namespace Auth_Api.Persistence
+{
+    public class AppDbContext : IdentityDbContext<ApplicationUser>
+    {
+
+        public AppDbContext(DbContextOptionsBuilder options) : base(options)
+        {
+
+        }
+
+    }
+}

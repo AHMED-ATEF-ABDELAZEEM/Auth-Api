@@ -1,4 +1,7 @@
 
+using Auth_Api.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 namespace Auth_Api
 {
     public class Program
@@ -12,6 +15,11 @@ namespace Auth_Api
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
+
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("connectionString")));
 
             var app = builder.Build();
 
