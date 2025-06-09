@@ -162,3 +162,8 @@ D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\obj\Debug\net9.0\ref
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\obj\Debug\net9.0\Auth-Api.pdb
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\obj\Debug\net9.0\Auth-Api.genruntimeconfig.cache
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\obj\Debug\net9.0\ref\Auth-Api.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\FluentValidation.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\FluentValidation.DependencyInjectionExtensions.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\SharpGrip.FluentValidation.AutoValidation.Mvc.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\SharpGrip.FluentValidation.AutoValidation.Shared.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
