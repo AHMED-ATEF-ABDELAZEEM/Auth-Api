@@ -12,6 +12,8 @@ namespace Auth_Api.Services
         Task<AuthResponse?> GetTokenAsync (string email,string password,CancellationToken cancellationToken = default);
 
         Task<AuthResponse?> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
+
+        Task<bool> RevokeRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
     }
 
     public class AuthService : IAuthService
@@ -110,6 +112,23 @@ namespace Auth_Api.Services
             };
         }
 
+
+        public async Task<bool> RevokeRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default)
+        {
+            var UserId = _jwtProvider.ValidateToken(token);
+            if (UserId is null) return false;
+
+            var User = await _userManager.FindByIdAsync(UserId);
+            if (User is null) return false;
+
+            var UserRefreshToken = User.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken && x.IsActive);
+            if (UserRefreshToken is null) return false;
+
+            UserRefreshToken.RevokedOn = DateTime.UtcNow;
+
+            await _userManager.UpdateAsync(User);
+            return true;
+        }
 
 
 

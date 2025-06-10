@@ -31,5 +31,13 @@ namespace Auth_Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("revoke-refresh-token")]
+        public async Task<IActionResult> RevokeRefreshTokenAsync(RefreshTokenRequest Request, CancellationToken cancellationToken)
+        {
+            var IsRevoked = await _authService.RevokeRefreshTokenAsync(Request.token, Request.RefreshToken, cancellationToken);
+            if (!IsRevoked) return BadRequest("InValid Token");
+            return Ok("Revoked Token Successfully");
+        }
+
     }
 }
