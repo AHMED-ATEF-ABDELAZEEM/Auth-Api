@@ -2,18 +2,20 @@
 using Auth_Api.Contracts.Auth.Responses;
 using Auth_Api.Models;
 using Auth_Api.Persistence;
+using Auth_Api.CustomResult;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Cryptography;
+using Auth_Api.CustomErrors;
 
 namespace Auth_Api.Services
 {
     public interface IAuthService
     {
-        Task<AuthResponse?> GetTokenAsync (string email,string password,CancellationToken cancellationToken = default);
+        Task<Result<AuthResponse>> GetTokenAsync (string email,string password,CancellationToken cancellationToken = default);
 
-        Task<AuthResponse?> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
+        Task<Result<AuthResponse>> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
 
-        Task<bool> RevokeRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
+        Task<Result> RevokeRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
     }
 
     public class AuthService : IAuthService
@@ -28,19 +30,18 @@ namespace Auth_Api.Services
             _jwtProvider = jwtProvider;
         }
 
-        public async Task<AuthResponse?> GetTokenAsync(string email, string password, CancellationToken cancellationToken = default)
+        public async Task<Result<AuthResponse>> GetTokenAsync(string email, string password, CancellationToken cancellationToken = default)
         {
             // Check if the user exists
             var User = await _userManager.FindByEmailAsync(email);
 
-            if (User is null) return null;
+            if (User is null) return Result.Failure<AuthResponse>(UserError.InvalidCredentials);
 
             // Check if the password is correct
 
             var IsValidPassword = await _userManager.CheckPasswordAsync(User, password);
 
-            if (!IsValidPassword) return null;
-
+            if (!IsValidPassword) return Result.Failure<AuthResponse>(UserError.InvalidCredentials);
             // Generate a JWT token
 
             var TokenInformation = _jwtProvider.GenerateToken(User);
@@ -60,8 +61,8 @@ namespace Auth_Api.Services
 
             await _userManager.UpdateAsync(User);
 
-            // Return the token and user information
-            return new AuthResponse
+
+            var AuthResponse =  new AuthResponse
             {
                 Id = User.Id,
                 FirstName = User.FirstName,
@@ -72,18 +73,20 @@ namespace Auth_Api.Services
                 RefreshToken = RefreshToken,
                 RefreshTokenExpiration = RefreshTokenExpirationDate
             };
+
+            return Result.Success(AuthResponse);
         }
 
-        public async Task<AuthResponse?> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default)
+        public async Task<Result<AuthResponse>> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default)
         {
             var UserId = _jwtProvider.ValidateToken(token);
-            if (UserId is null) return null;
+            if (UserId is null) return Result.Failure<AuthResponse>(TokenError.InvalidToken);
 
             var User = await _userManager.FindByIdAsync(UserId);
-            if (User is null) return null;
+            if (User is null) return Result.Failure<AuthResponse>(TokenError.InvalidToken);
 
             var UserRefreshToken = User.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken && x.IsActive);
-            if (UserRefreshToken is null) return null;
+            if (UserRefreshToken is null) return Result.Failure<AuthResponse>(TokenError.InvalidToken);
 
             UserRefreshToken.RevokedOn = DateTime.UtcNow;
 
@@ -99,7 +102,7 @@ namespace Auth_Api.Services
 
             await _userManager.UpdateAsync(User);
 
-            return new AuthResponse
+            var AuthResponse = new AuthResponse
             {
                 Id = User.Id,
                 FirstName = User.FirstName,
@@ -110,24 +113,27 @@ namespace Auth_Api.Services
                 RefreshToken = NewRefreshToken,
                 RefreshTokenExpiration = NewRefreshTokenExpiration
             };
+
+            return Result.Success(AuthResponse);
+
         }
 
 
-        public async Task<bool> RevokeRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default)
+        public async Task<Result> RevokeRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default)
         {
             var UserId = _jwtProvider.ValidateToken(token);
-            if (UserId is null) return false;
+            if (UserId is null) return Result.Failure(TokenError.InvalidToken);
 
             var User = await _userManager.FindByIdAsync(UserId);
-            if (User is null) return false;
+            if (User is null) return Result.Failure(TokenError.InvalidToken);
 
             var UserRefreshToken = User.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken && x.IsActive);
-            if (UserRefreshToken is null) return false;
+            if (UserRefreshToken is null) return Result.Failure(TokenError.InvalidToken);
 
             UserRefreshToken.RevokedOn = DateTime.UtcNow;
 
             await _userManager.UpdateAsync(User);
-            return true;
+            return Result.Success();
         }
 
 
