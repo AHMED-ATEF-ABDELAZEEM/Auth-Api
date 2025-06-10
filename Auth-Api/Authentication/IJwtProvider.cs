@@ -15,6 +15,8 @@ namespace Auth_Api.Authentication
     public interface IJwtProvider
     {
         TokenInformation GenerateToken(ApplicationUser User);
+
+        string? ValidateToken(string token);
     }
     public class JwtProvider : IJwtProvider
     {
@@ -57,6 +59,32 @@ namespace Auth_Api.Authentication
                 Token = new JwtSecurityTokenHandler().WriteToken(SecurityToken),
                 ExpiresIn = ExpiresMinute,
             };
+        }
+
+        public string? ValidateToken(string token)
+        {
+            var TokenHandler = new JwtSecurityTokenHandler();
+            var SymmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JwtOptions.Key));
+            try
+            {
+                TokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    IssuerSigningKey = SymmetricKey,
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero,
+                }, out SecurityToken validatedToken);
+
+                var JwtToken = (JwtSecurityToken)validatedToken;
+                var UserId = JwtToken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                return UserId;
+            }
+            catch
+            {
+                return null;
+            }
+
         }
     }
 }

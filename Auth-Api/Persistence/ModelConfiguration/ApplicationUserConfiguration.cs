@@ -8,6 +8,13 @@ namespace Auth_Api.Persistence.ModelConfiguration
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
+
+            builder.OwnsMany(x => x.RefreshTokens)
+                .ToTable("RefreshTokens")
+                .WithOwner()
+                .HasForeignKey("UserId");
+             
+
             builder.Property(u => u.FirstName)
                 .IsRequired()
                 .HasMaxLength(50);

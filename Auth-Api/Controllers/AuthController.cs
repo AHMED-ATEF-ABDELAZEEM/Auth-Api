@@ -23,6 +23,13 @@ namespace Auth_Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _authService.GetRefreshTokenAsync(request.token,request.RefreshToken, cancellationToken);
+            if (result == null) return BadRequest("Token Or Refresh Token Is Not Valid");
+            return Ok(result);
+        }
 
     }
 }

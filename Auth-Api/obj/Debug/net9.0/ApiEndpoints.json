@@ -17,28 +17,18 @@
   },
   {
     "ContainingType": "Auth_Api.Controllers.AuthController",
-    "Method": "RegisterAsync",
-    "RelativePath": "Auth/register",
+    "Method": "RefreshTokenAsync",
+    "RelativePath": "Auth/refresh",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "Request",
-        "Type": "Auth_Api.Contracts.Auth.Requests.RegisterRequest",
+        "Name": "request",
+        "Type": "Auth_Api.Contracts.Auth.Requests.RefreshTokenRequest",
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Auth_Api.Controllers.AuthController",
-    "Method": "Test",
-    "RelativePath": "Auth/Test",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
     "ReturnTypes": []
   }
 ]
