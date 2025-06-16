@@ -58,13 +58,13 @@
 
     public class Error
     {
-        private readonly string _code;
-        private readonly string _description;
+        public  string code;
+        public  string description;
 
         public Error(string code, string description)
         {
-            _code = code;
-            _description = description;
+            this.code = code;
+            this.description = description;
         }
 
         public static Error None = new Error(string.Empty, string.Empty);

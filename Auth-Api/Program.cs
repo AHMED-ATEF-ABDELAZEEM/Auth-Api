@@ -4,6 +4,8 @@ using Auth_Api.Models;
 using Auth_Api.Persistence;
 using Auth_Api.Services;
 using FluentValidation;
+using Mapster;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Connections.Abstractions;
 using Microsoft.AspNetCore.Identity;
@@ -28,7 +30,12 @@ namespace Auth_Api
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
-           
+            // Add Mapster
+            var MappingConfig = TypeAdapterConfig.GlobalSettings;
+            MappingConfig.Scan(Assembly.GetExecutingAssembly());
+            builder.Services.AddSingleton<IMapper>(new Mapper(MappingConfig));
+
+
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.AddFluentValidationAutoValidation();
 

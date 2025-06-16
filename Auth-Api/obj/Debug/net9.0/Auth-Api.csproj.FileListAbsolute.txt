@@ -167,3 +167,7 @@ D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Flu
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\SharpGrip.FluentValidation.AutoValidation.Mvc.dll
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\SharpGrip.FluentValidation.AutoValidation.Shared.dll
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Mapster.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Mapster.Core.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Mapster.DependencyInjection.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\obj\Debug\net9.0\Auth-Api.sourcelink.json
