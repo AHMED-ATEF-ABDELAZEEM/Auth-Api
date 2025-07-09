@@ -1,5 +1,6 @@
 
 using Auth_Api.Authentication;
+using Auth_Api.CustomErrors;
 using Auth_Api.Models;
 using Auth_Api.Persistence;
 using Auth_Api.Services;
@@ -73,6 +74,10 @@ namespace Auth_Api
                 };
             });
 
+            // Exception Handler
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+            builder.Services.AddProblemDetails();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -90,6 +95,8 @@ namespace Auth_Api
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseExceptionHandler();
 
             app.Run();
         }

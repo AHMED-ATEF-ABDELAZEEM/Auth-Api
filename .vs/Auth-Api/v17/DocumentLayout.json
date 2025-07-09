@@ -3,24 +3,24 @@
   "WorkspaceRootPath": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\customresult\\result.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\customresult\\result.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\customerrors\\globalexceptionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\customerrors\\globalexceptionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\mapping\\mappingconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\mapping\\mappingconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\customresult\\result.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\customresult\\result.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -35,40 +35,39 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "GlobalExceptionHandler.cs",
+              "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\CustomErrors\\GlobalExceptionHandler.cs",
+              "RelativeDocumentMoniker": "Auth-Api\\CustomErrors\\GlobalExceptionHandler.cs",
+              "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\CustomErrors\\GlobalExceptionHandler.cs",
+              "RelativeToolTip": "Auth-Api\\CustomErrors\\GlobalExceptionHandler.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-09T14:27:59.43Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "Result.cs",
               "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\CustomResult\\Result.cs",
               "RelativeDocumentMoniker": "Auth-Api\\CustomResult\\Result.cs",
               "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\CustomResult\\Result.cs",
               "RelativeToolTip": "Auth-Api\\CustomResult\\Result.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADoAAAAAAAAAAAA1wDoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-16T17:52:15.725Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-16T17:52:15.725Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "IAuthService.cs",
               "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Services\\IAuthService.cs",
               "RelativeDocumentMoniker": "Auth-Api\\Services\\IAuthService.cs",
               "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Services\\IAuthService.cs",
               "RelativeToolTip": "Auth-Api\\Services\\IAuthService.cs",
-              "ViewState": "AgIAAGQAAAAAAAAAAAAwwGcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAowEsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-16T17:49:26.892Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "MappingConfiguration.cs",
-              "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Mapping\\MappingConfiguration.cs",
-              "RelativeDocumentMoniker": "Auth-Api\\Mapping\\MappingConfiguration.cs",
-              "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Mapping\\MappingConfiguration.cs",
-              "RelativeToolTip": "Auth-Api\\Mapping\\MappingConfiguration.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-16T17:48:50.555Z",
               "EditorCaption": ""
             },
             {
@@ -79,20 +78,20 @@
               "RelativeDocumentMoniker": "Auth-Api\\Controllers\\AuthController.cs",
               "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Controllers\\AuthController.cs",
               "RelativeToolTip": "Auth-Api\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABMAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-09T13:01:53.845Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Program.cs",
               "RelativeDocumentMoniker": "Auth-Api\\Program.cs",
               "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Program.cs",
               "RelativeToolTip": "Auth-Api\\Program.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAAQwCMAAABOAAAAAAAAAA==",
+              "ViewState": "AgIAAC4AAAAAAAAAAADwv2YAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-08T16:38:48.677Z",
               "EditorCaption": ""
