@@ -44,9 +44,18 @@ namespace Auth_Api
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("connectionString")));
+                
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>();
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.SignIn.RequireConfirmedEmail = true;
+                options.User.RequireUniqueEmail = true;
+            });
 
 
             builder.Services.AddSingleton<IJwtProvider, JwtProvider>();

@@ -1,4 +1,6 @@
-﻿using Mapster;
+﻿using Auth_Api.Contracts.Auth.Requests;
+using Auth_Api.Models;
+using Mapster;
 
 namespace Auth_Api.Mapping
 {
@@ -9,8 +11,8 @@ namespace Auth_Api.Mapping
 
             // You Make Manual Mapping  Property Name Is Different
 
-            //config.NewConfig<Poll,PollResponse>()
-            //    .Map(dest => dest.description, src => src.Summary);
+            config.NewConfig<RegisterRequest,ApplicationUser>()
+                .Map(dest => dest.UserName, src => src.Email);
         }
     }
 }

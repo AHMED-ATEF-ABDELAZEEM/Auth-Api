@@ -1,12 +1,18 @@
 [
   {
     "ContainingType": "Auth_Api.Controllers.AuthController",
-    "Method": "Test",
-    "RelativePath": "Auth",
-    "HttpMethod": "GET",
+    "Method": "ConfirmEmail",
+    "RelativePath": "Auth/confirm-email",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Auth_Api.Contracts.Auth.Requests.ConfirmEmailRequest",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -36,6 +42,22 @@
       {
         "Name": "request",
         "Type": "Auth_Api.Contracts.Auth.Requests.RefreshTokenRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AuthController",
+    "Method": "Register",
+    "RelativePath": "Auth/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Auth_Api.Contracts.Auth.Requests.RegisterRequest",
         "IsRequired": true
       }
     ],

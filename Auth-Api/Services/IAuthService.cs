@@ -1,11 +1,17 @@
 ﻿using Auth_Api.Authentication;
+using Auth_Api.Contracts.Auth.Requests;
 using Auth_Api.Contracts.Auth.Responses;
+using Auth_Api.CustomErrors;
+using Auth_Api.CustomResult;
 using Auth_Api.Models;
 using Auth_Api.Persistence;
-using Auth_Api.CustomResult;
+using Mapster;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
-using Auth_Api.CustomErrors;
+using System.Text;
 
 namespace Auth_Api.Services
 {
@@ -16,6 +22,9 @@ namespace Auth_Api.Services
         Task<Result<AuthResponse>> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
 
         Task<Result> RevokeRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
+
+        Task<Result> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default);
+
     }
 
     public class AuthService : IAuthService
@@ -187,6 +196,39 @@ namespace Auth_Api.Services
             return Result.Success();
         }
 
+        public async Task<Result> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("Starting registration process for email: {Email}", request.Email);
+
+            var IsEmailExist = await _userManager.Users.AnyAsync(u => u.Email == request.Email, cancellationToken);
+
+            if (IsEmailExist)
+            {
+                _logger.LogWarning("Registration failed: email already exists: {Email}", request.Email);
+                return Result.Failure(UserError.DuplicatedEmail);
+            }
+
+            var user = request.Adapt<ApplicationUser>();
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+
+            if (result.Succeeded)
+            {
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                // TODO
+                // You Should  send this code to the user via email for confirmation And Remove This Logging Before Production
+                _logger.LogInformation("Confirmation Email: {code}", code);
+                _logger.LogInformation("User Id: {userId}", user.Id);
+                _logger.LogInformation("Registration Successfully for Email : {email}", user.Email);
+                return Result.Success();
+            }
+
+            _logger.LogWarning("Registration failed for email: {Email}. Errors: {Errors}", request.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
+            var error = result.Errors.First();
+            return Result.Failure(new Error(error.Code, error.Description));
+
+        }
 
 
         private static string GenerateRefreshToken()
