@@ -25,6 +25,8 @@ namespace Auth_Api.Services
 
         Task<Result> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default);
 
+        Task<Result> ConfirmEmailAsync(ConfirmEmailRequest request);
+
     }
 
     public class AuthService : IAuthService
@@ -228,6 +230,49 @@ namespace Auth_Api.Services
             var error = result.Errors.First();
             return Result.Failure(new Error(error.Code, error.Description));
 
+        }
+
+        public async Task<Result> ConfirmEmailAsync(ConfirmEmailRequest request)
+        {
+
+            _logger.LogInformation("Start Confirmation Email For User With Id : {Id}", request.UserId);
+
+            var user = await _userManager.FindByIdAsync(request.UserId);
+            if (user is null)
+            {
+                _logger.LogWarning("Email confirmation failed: user not found for ID: {UserId}", request.UserId);
+                return Result.Failure(UserError.InvalidCode);
+            }
+
+            if (user.EmailConfirmed)
+            {
+                _logger.LogInformation("Email confirmation failed: Email already confirmed for user ID: {UserId}", request.UserId);
+                return Result.Failure(UserError.DuplicatedConfirmation);
+            }
+
+            var code = request.Code;
+
+            try
+            {
+                code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            }
+            catch (FormatException)
+            {
+                _logger.LogWarning("Email confirmation failed: invalid code format for user ID: {UserId}", request.UserId);
+                return Result.Failure(UserError.InvalidCode);
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("Email confirmed successfully for user ID: {UserId}", request.UserId);
+                return Result.Success();
+            }
+
+            _logger.LogWarning("Email confirmation failed for user ID: {UserId}. Errors: {Errors}", request.UserId, string.Join(", ", result.Errors.Select(e => e.Description)));
+            var error = result.Errors.First();
+            return Result.Failure(new Error(error.Code, error.Description));
         }
 
 

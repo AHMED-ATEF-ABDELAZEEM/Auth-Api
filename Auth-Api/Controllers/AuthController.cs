@@ -49,6 +49,13 @@ namespace Auth_Api.Controllers
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
 
+        [HttpPost("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
+        {
+            var result = await _authService.ConfirmEmailAsync(request);
+
+            return result.IsSuccess ? Ok() : BadRequest(result.Error);
+        }
 
     }
 }

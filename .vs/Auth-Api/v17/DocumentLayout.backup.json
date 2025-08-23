@@ -58,8 +58,7 @@
               "RelativeToolTip": "Auth-Api\\Contracts\\Auth\\Validations\\LoginRequestValidator.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-23T08:13:47.661Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-23T08:13:47.661Z"
             },
             {
               "$type": "Document",
@@ -71,8 +70,7 @@
               "RelativeToolTip": "Auth-Api\\Contracts\\Auth\\Requests\\ConfirmEmailRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-23T08:12:54.388Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-23T08:12:54.388Z"
             },
             {
               "$type": "Document",
@@ -130,7 +128,7 @@
               "RelativeDocumentMoniker": "Auth-Api\\Services\\IAuthService.cs",
               "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Services\\IAuthService.cs",
               "RelativeToolTip": "Auth-Api\\Services\\IAuthService.cs",
-              "ViewState": "AgIAACsAAAAAAAAAAAAAAMwAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADoAAAAAAAAAAAAwwD4AAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-16T17:49:26.892Z",
               "EditorCaption": ""
@@ -143,7 +141,7 @@
               "RelativeDocumentMoniker": "Auth-Api\\Controllers\\AuthController.cs",
               "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Controllers\\AuthController.cs",
               "RelativeToolTip": "Auth-Api\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAACwAAAAAAAAAAAAgwDMAAAAgAAAAAAAAAA==",
+              "ViewState": "AgIAACEAAAAAAAAAAAAgwDIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-09T13:01:53.845Z",
               "EditorCaption": ""
@@ -158,8 +156,7 @@
               "RelativeToolTip": "Auth-Api\\Program.cs",
               "ViewState": "AgIAACUAAAAAAAAAAAAkwDYAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-08T16:38:48.677Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-08T16:38:48.677Z"
             }
           ]
         }
