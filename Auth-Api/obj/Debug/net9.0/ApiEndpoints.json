@@ -1,7 +1,17 @@
 [
   {
     "ContainingType": "Auth_Api.Controllers.AuthController",
-    "Method": "LogInAsync",
+    "Method": "Test",
+    "RelativePath": "Auth",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AuthController",
+    "Method": "LogIn",
     "RelativePath": "Auth/login",
     "HttpMethod": "POST",
     "IsController": true,
@@ -17,7 +27,7 @@
   },
   {
     "ContainingType": "Auth_Api.Controllers.AuthController",
-    "Method": "RefreshTokenAsync",
+    "Method": "RefreshToken",
     "RelativePath": "Auth/refresh",
     "HttpMethod": "POST",
     "IsController": true,
@@ -33,7 +43,7 @@
   },
   {
     "ContainingType": "Auth_Api.Controllers.AuthController",
-    "Method": "RevokeRefreshTokenAsync",
+    "Method": "RevokeRefreshToken",
     "RelativePath": "Auth/revoke-refresh-token",
     "HttpMethod": "POST",
     "IsController": true,

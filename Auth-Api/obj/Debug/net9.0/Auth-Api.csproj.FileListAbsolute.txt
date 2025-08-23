@@ -171,3 +171,12 @@ D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Map
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Mapster.Core.dll
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Mapster.DependencyInjection.dll
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\obj\Debug\net9.0\Auth-Api.sourcelink.json
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Serilog.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Serilog.AspNetCore.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Serilog.Extensions.Hosting.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Serilog.Extensions.Logging.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Serilog.Formatting.Compact.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Serilog.Settings.Configuration.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Serilog.Sinks.Console.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Serilog.Sinks.Debug.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Serilog.Sinks.File.dll

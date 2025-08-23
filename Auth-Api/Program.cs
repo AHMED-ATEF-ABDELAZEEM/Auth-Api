@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System.Reflection;
 using System.Text;
@@ -37,6 +38,7 @@ namespace Auth_Api
             builder.Services.AddSingleton<IMapper>(new Mapper(MappingConfig));
 
 
+            // fluent validation
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.AddFluentValidationAutoValidation();
 
@@ -46,12 +48,13 @@ namespace Auth_Api
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
 
+
             builder.Services.AddSingleton<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
-            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JWT"));
 
-            var JwtSetting = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
+            var JwtSetting = builder.Configuration.GetSection("JWT").Get<JwtOptions>();
 
 
             builder.Services.AddAuthentication(options =>
@@ -78,6 +81,14 @@ namespace Auth_Api
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
 
+            // To Use Serilog Package For Logging
+            builder.Host.UseSerilog((context, configuration) => 
+            {
+                // Read Configuration from appsettings.json
+                configuration.ReadFrom.Configuration(context.Configuration);
+
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -86,7 +97,8 @@ namespace Auth_Api
                 app.MapOpenApi();
             }
 
-            
+
+            app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
 

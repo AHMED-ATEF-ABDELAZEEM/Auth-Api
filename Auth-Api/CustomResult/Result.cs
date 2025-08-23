@@ -58,8 +58,8 @@
 
     public class Error
     {
-        public  string code;
-        public  string description;
+        public  string code { get; set; }
+        public  string description { get; set; }
 
         public Error(string code, string description)
         {
