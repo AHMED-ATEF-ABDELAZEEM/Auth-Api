@@ -94,6 +94,11 @@ namespace Auth_Api
                     ValidAudience = JwtSetting.Audience,
 
                 };
+            })
+            .AddGoogle(options =>
+            {
+                options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+                options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
             });
 
 

@@ -32,7 +32,7 @@ namespace Auth_Api.Services
 
         Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request);
 
-
+        Task<Result<AuthResponse>> GoogleLoginAsync(HttpContext httpContext);
 
     }
 
@@ -75,37 +75,7 @@ namespace Auth_Api.Services
                 return Result.Failure<AuthResponse>(UserError.InvalidCredentials);
             }
 
-            // Generate JWT token
-            var tokenInformation = _jwtProvider.GenerateToken(user);
-            _logger.LogInformation("JWT token generated for user {UserId}", user.Id);
-
-            // Generate Refresh Token
-            var refreshToken = GenerateRefreshToken();
-            var refreshTokenExpirationDate = DateTime.UtcNow.AddDays(_RefreshTokenExpiryDays);
-
-            // Store refresh token in DB
-            user.RefreshTokens.Add(new RefreshToken
-            {
-                Token = refreshToken,
-                ExpiresOn = refreshTokenExpirationDate
-            });
-
-            await _userManager.UpdateAsync(user);
-            _logger.LogInformation("Refresh token stored in database for user {UserId}", user.Id);
-
-            var authResponse = new AuthResponse
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email!,
-                Token = tokenInformation.Token,
-                ExpireIn = tokenInformation.ExpiresIn * 60,
-                RefreshToken = refreshToken,
-                RefreshTokenExpiration = refreshTokenExpirationDate
-            };
-
-            _logger.LogInformation("Authentication successful for user {UserId}", user.Id);
+            var authResponse = await GenerateAuthResponseAsync(user);
 
             return Result.Success(authResponse);
         }
@@ -313,7 +283,58 @@ namespace Auth_Api.Services
             return Result.Success();
         }
 
+        public async Task<Result<AuthResponse>> GoogleLoginAsync(HttpContext httpContext)
+        {
+            var result = await httpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning("External authentication failed.");
+                return Result.Failure<AuthResponse>(ExternalAuthError.AuthenticationFailed);
+            }
 
+
+            var claims = result.Principal!.Claims;
+
+            var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+            _logger.LogInformation("Starting External Login Using Google For Email : {email}", email);
+
+            var user = await _userManager.FindByEmailAsync(email!);
+
+            if (user is null)
+            {
+
+                var name = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+                var givenName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
+                var familyName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
+
+                user = new ApplicationUser
+                {
+                    Email = email,
+                    UserName = email,
+                    FirstName = givenName!,
+                    LastName = familyName!,
+                    EmailConfirmed = true,
+                };
+
+                var addResult = await _userManager.CreateAsync(user);
+                if (addResult.Succeeded)
+                {
+                    _logger.LogInformation("Added User Successfully With Email : {email}", email);
+                }
+                else
+                {
+                    _logger.LogWarning("External authentication failed: user creation failed.");
+                    var error = addResult.Errors.First();
+                    return Result.Failure<AuthResponse>(new Error(error.Code, error.Description));
+                }
+            }
+
+            var authResponse = await GenerateAuthResponseAsync(user);
+
+            return Result.Success(authResponse);
+
+        }
 
         private static string GenerateRefreshToken()
         {
@@ -333,6 +354,44 @@ namespace Auth_Api.Services
             await _emailSender.SendEmailAsync(user.Email!, "Survey Basket : Confirm your email", emailBody);
         }
 
+        private async Task <AuthResponse> GenerateAuthResponseAsync(ApplicationUser user)
+        {
+            _logger.LogInformation("Starting Generate Token For Email : {email}", user.Email);
+
+            // Generate JWT token
+            var tokenInformation = _jwtProvider.GenerateToken(user);
+            _logger.LogInformation("JWT token generated For Email : {email}", user.Email);
+
+            // Generate Refresh Token
+            var refreshToken = GenerateRefreshToken();
+            var refreshTokenExpirationDate = DateTime.UtcNow.AddDays(_RefreshTokenExpiryDays);
+
+            // Store refresh token in DB
+            user.RefreshTokens.Add(new RefreshToken
+            {
+                Token = refreshToken,
+                ExpiresOn = refreshTokenExpirationDate
+            });
+
+            await _userManager.UpdateAsync(user);
+            _logger.LogInformation("Refresh token stored in database for user {Email}", user.Email);
+
+            var authResponse = new AuthResponse
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email!,
+                Token = tokenInformation.Token,
+                ExpireIn = tokenInformation.ExpiresIn * 60,
+                RefreshToken = refreshToken,
+                RefreshTokenExpiration = refreshTokenExpirationDate
+            };
+
+            _logger.LogInformation("Authentication successful for user {Email}", user.Email);
+
+            return authResponse;
+        }
 
     }
 }

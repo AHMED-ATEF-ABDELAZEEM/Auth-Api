@@ -73,6 +73,22 @@ namespace Auth_Api.Controllers
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
 
+        [HttpGet("google")]
+        [AllowAnonymous]
+        public IActionResult GoogleLogin([FromQuery] string? returnUrl = null)
+        {
+            var redirectUrl = Url.ActionLink(nameof(GoogleLoginCallback), values: new { returnUrl });
+            var props = _signInManager.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme, redirectUrl);
+            return Challenge(props, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("signin-google")]
+        public async Task<IActionResult> GoogleLoginCallback([FromQuery] string? returnUrl = null)
+        {
+            var result = await _authService.GoogleLoginAsync(HttpContext);
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
     }
 }
 

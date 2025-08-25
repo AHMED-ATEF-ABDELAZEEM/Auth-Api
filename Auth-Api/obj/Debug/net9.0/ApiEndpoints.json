@@ -17,6 +17,22 @@
   },
   {
     "ContainingType": "Auth_Api.Controllers.AuthController",
+    "Method": "GoogleLogin",
+    "RelativePath": "Auth/google",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "returnUrl",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AuthController",
     "Method": "LogIn",
     "RelativePath": "Auth/login",
     "HttpMethod": "POST",
@@ -91,6 +107,22 @@
         "Name": "Request",
         "Type": "Auth_Api.Contracts.Auth.Requests.RefreshTokenRequest",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AuthController",
+    "Method": "GoogleLoginCallback",
+    "RelativePath": "Auth/signin-google",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "returnUrl",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
