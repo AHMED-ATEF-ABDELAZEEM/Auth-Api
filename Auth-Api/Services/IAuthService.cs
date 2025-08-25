@@ -40,18 +40,20 @@ namespace Auth_Api.Services
     {
 
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IJwtProvider _jwtProvider;
         private readonly int _RefreshTokenExpiryDays = 14;
         private readonly ILogger<AuthService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEmailSender _emailSender;
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender)
+        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _jwtProvider = jwtProvider;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _emailSender = emailSender;
+            _signInManager = signInManager;
         }
 
         public async Task<Result<AuthResponse>> GetTokenAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -67,9 +69,27 @@ namespace Auth_Api.Services
                 return Result.Failure<AuthResponse>(UserError.InvalidCredentials);
             }
 
-            var isValidPassword = await _userManager.CheckPasswordAsync(user, password);
+            if (user.PasswordHash is null)
+            {
+                _logger.LogWarning("Authentication failed: User with email {Email} has no password (External Login)", email);
+                return Result.Failure<AuthResponse>(UserError.ExternalLogin);
+            }
 
-            if (!isValidPassword)
+            if (!user.EmailConfirmed)
+            {
+                _logger.LogWarning("Authentication failed: User with email {Email} is not confirmed", email);
+                return Result.Failure<AuthResponse>(UserError.EmailNotConfirmed);
+            }
+
+            var  result = await _signInManager.PasswordSignInAsync(user, password, false,lockoutOnFailure: true);
+
+            if (result.IsLockedOut)
+            {
+                _logger.LogWarning("Authentication failed: User with email {Email} is locked out", email);
+                return Result.Failure<AuthResponse>(UserError.LockedOut);
+            }
+
+            if (!result.Succeeded)
             {
                 _logger.LogWarning("Authentication failed: Invalid password for user with email {Email}", email);
                 return Result.Failure<AuthResponse>(UserError.InvalidCredentials);
@@ -97,6 +117,12 @@ namespace Auth_Api.Services
             {
                 _logger.LogWarning("User not found for UserId {UserId}", userId);
                 return Result.Failure<AuthResponse>(TokenError.InvalidToken);
+            }
+
+            if (user.LockoutEnd != null && user.LockoutEnd > DateTime.UtcNow)
+            {
+                _logger.LogWarning("Refresh token failed: user is locked out");
+                return Result.Failure<AuthResponse>(UserError.LockedOut);
             }
 
             var userRefreshToken = user.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken && x.IsActive);
