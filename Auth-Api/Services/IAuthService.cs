@@ -3,13 +3,16 @@ using Auth_Api.Contracts.Auth.Requests;
 using Auth_Api.Contracts.Auth.Responses;
 using Auth_Api.CustomErrors;
 using Auth_Api.CustomResult;
+using Auth_Api.EmailSettings;
 using Auth_Api.Models;
-using Auth_Api.Persistence;
 using Mapster;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -27,6 +30,10 @@ namespace Auth_Api.Services
 
         Task<Result> ConfirmEmailAsync(ConfirmEmailRequest request);
 
+        Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request);
+
+
+
     }
 
     public class AuthService : IAuthService
@@ -36,11 +43,15 @@ namespace Auth_Api.Services
         private readonly IJwtProvider _jwtProvider;
         private readonly int _RefreshTokenExpiryDays = 14;
         private readonly ILogger<AuthService> _logger;
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, ILogger<AuthService> logger)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEmailSender _emailSender;
+        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender)
         {
             _userManager = userManager;
             _jwtProvider = jwtProvider;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+            _emailSender = emailSender;
         }
 
         public async Task<Result<AuthResponse>> GetTokenAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -223,6 +234,7 @@ namespace Auth_Api.Services
                 _logger.LogInformation("Confirmation Email: {code}", code);
                 _logger.LogInformation("User Id: {userId}", user.Id);
                 _logger.LogInformation("Registration Successfully for Email : {email}", user.Email);
+                await SendConfirmationEmail(user, code);
                 return Result.Success();
             }
 
@@ -275,11 +287,52 @@ namespace Auth_Api.Services
             return Result.Failure(new Error(error.Code, error.Description));
         }
 
+        public async Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user is null)
+            {
+                _logger.LogWarning("Resend confirmation email failed: user not found for email: {Email}", request.Email);
+                // No user found, no need to resend confirmation email 
+                // You Shouldnt Return That The User Not Found Error Can Be Used For Security Reasons (Attack)
+                return Result.Success();
+            }
+            if (user.EmailConfirmed)
+            {
+                _logger.LogInformation("Resend confirmation email failed: Email already confirmed for email: {Email}", request.Email);
+                return Result.Failure(UserError.DuplicatedConfirmation);
+            }
+
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            // TODO
+            // You Should send this code to the user via email for confirmation And Remove this line in production
+            _logger.LogInformation("confirmation code : {code}", code);
+            _logger.LogInformation("User Id : {Id}", user.Id);
+            await SendConfirmationEmail(user, code);
+            return Result.Success();
+        }
+
+
 
         private static string GenerateRefreshToken()
         {
 
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         }
+        
+        private async Task SendConfirmationEmail(ApplicationUser user, string code)
+        {
+            var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin;
+            var emailBody = EmailBodyBuilder.GenerateEmailBody("EmailConfirmation",
+                new Dictionary<string, string>()
+                {
+                    { "{{name}}",user.FirstName },
+                    {"{{action_url}}", $"{origin}/auth/confirm-email?userId={user.Id}&code={code}"}
+                });
+            await _emailSender.SendEmailAsync(user.Email!, "Survey Basket : Confirm your email", emailBody);
+        }
+
+
     }
 }

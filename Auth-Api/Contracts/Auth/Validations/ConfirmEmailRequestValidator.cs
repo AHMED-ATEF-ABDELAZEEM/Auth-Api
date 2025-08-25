@@ -15,4 +15,7 @@ namespace Auth_Api.Contracts.Auth.Validations
 
         }
     }
+
+
+
 }

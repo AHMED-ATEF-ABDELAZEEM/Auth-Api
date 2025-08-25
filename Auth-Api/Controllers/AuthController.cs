@@ -1,7 +1,12 @@
 ﻿using Auth_Api.Contracts.Auth.Requests;
+using Auth_Api.Models;
 using Auth_Api.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 
 namespace Auth_Api.Controllers
@@ -10,16 +15,20 @@ namespace Auth_Api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private readonly IAuthService _authService;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        public AuthController(IAuthService authService, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
         {
             _authService = authService;
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> LogIn ([FromBody]LoginRequest request,CancellationToken cancellationToken)
+        public async Task<IActionResult> LogIn([FromBody] LoginRequest request, CancellationToken cancellationToken)
         {
-            var result = await _authService.GetTokenAsync(request.email,request.password, cancellationToken);
+            var result = await _authService.GetTokenAsync(request.email, request.password, cancellationToken);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
@@ -27,16 +36,16 @@ namespace Auth_Api.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
-            var result = await _authService.GetRefreshTokenAsync(request.token,request.RefreshToken, cancellationToken);
+            var result = await _authService.GetRefreshTokenAsync(request.token, request.RefreshToken, cancellationToken);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
 
         [HttpPost("revoke-refresh-token")]
-        public async Task<IActionResult> RevokeRefreshToken([FromBody]RefreshTokenRequest Request, CancellationToken cancellationToken)
+        public async Task<IActionResult> RevokeRefreshToken([FromBody] RefreshTokenRequest Request, CancellationToken cancellationToken)
         {
             var result = await _authService.RevokeRefreshTokenAsync(Request.token, Request.RefreshToken, cancellationToken);
-            
+
             return result.IsSuccess ? NoContent() : BadRequest(result.Error);
         }
 
@@ -57,5 +66,13 @@ namespace Auth_Api.Controllers
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
 
+        [HttpPost("resend-confirmation-email")]
+        public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _authService.ResendConfirmationEmailAsync(request);
+            return result.IsSuccess ? Ok() : BadRequest(result.Error);
+        }
+
     }
 }
+

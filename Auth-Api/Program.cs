@@ -1,15 +1,20 @@
-
+﻿
 using Auth_Api.Authentication;
 using Auth_Api.CustomErrors;
+using Auth_Api.EmailSettings;
 using Auth_Api.Models;
 using Auth_Api.Persistence;
 using Auth_Api.Services;
 using FluentValidation;
 using Mapster;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Connections.Abstractions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -60,6 +65,11 @@ namespace Auth_Api
 
             builder.Services.AddSingleton<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IEmailSender, EmailService>();
+
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
 
             builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JWT"));
 
@@ -85,6 +95,9 @@ namespace Auth_Api
 
                 };
             });
+
+
+
 
             // Exception Handler
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

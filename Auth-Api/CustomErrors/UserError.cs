@@ -14,4 +14,12 @@ namespace Auth_Api.CustomErrors
 
         public static Error DuplicatedConfirmation = new Error("User.DuplicatedConfirmation", "You Have Already Confirmed Your Email, No Need To Confirm Again.");
     }
+
+    public static class ExternalAuthError
+    {
+        public static Error AuthenticationFailed = new Error(
+            "ExternalAuth.AuthenticationFailed",
+            "External authentication failed. Please try again."
+        );
+    }
 }
