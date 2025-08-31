@@ -32,6 +32,10 @@ namespace Auth_Api.Services
 
         Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request);
 
+        Task<Result> SendResetPasswordEmailAsync(string email);
+
+        Task<Result> ResetPasswordAsync(ResetPasswordRequest request);
+
         Task<Result<AuthResponse>> GoogleLoginAsync(HttpContext httpContext);
 
     }
@@ -309,6 +313,89 @@ namespace Auth_Api.Services
             return Result.Success();
         }
 
+
+
+        public async Task<Result> SendResetPasswordEmailAsync(string email)
+        {
+
+            _logger.LogInformation("starting process for send reset password email To {email}", email);
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+            {
+                _logger.LogWarning("Send Reset password Email failed: user not found for email: {Email}", email);
+                //  For Security Reasons (Attack)
+                return Result.Success();
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                _logger.LogWarning("Send Reset password Email failed: email not confirmed for email: {Email}", email);
+                return Result.Failure(UserError.EmailNotConfirmed);
+            }
+
+
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            // TODO
+            // You Should send this code to the user via email for confirmation And Remove this line in production
+            _logger.LogInformation("Reset password code : {code}", code);
+
+            await SendResetPasswordEmail(user, code);
+
+            _logger.LogInformation("Send Reset password Email successfully for email: {Email}", email);
+
+            return Result.Success();
+        }
+
+        public async Task<Result> ResetPasswordAsync(ResetPasswordRequest request)
+        {
+
+            _logger.LogInformation("starting reset password process For email : {email}", request.Email);
+
+            var user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user is null)
+            {
+                _logger.LogWarning("reset password failed: user not found for email: {Email}", request.Email);
+                return Result.Failure(UserError.InvalidCode);
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                _logger.LogWarning("reset password failed: email not confirmed for email: {Email}", request.Email);
+                return Result.Failure(UserError.EmailNotConfirmed);
+            }
+
+            var code = request.Code;
+            try
+            {
+                code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            }
+            catch (FormatException)
+            {
+                _logger.LogWarning("reset password failed: invalid code format for email: {Email}", request.Email);
+                return Result.Failure(UserError.InvalidCode);
+            }
+
+
+            var result = await _userManager.ResetPasswordAsync(user, code, request.NewPassword);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("reset password successfully for email: {Email}", request.Email);
+                return Result.Success();
+            }
+
+            _logger.LogWarning("reset password failed for email: {Email}. Errors: {Errors}", request.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
+            var error = result.Errors.First();
+            return Result.Failure(new Error(error.Code, error.Description));
+        }
+
+
+
+
+
+
         public async Task<Result<AuthResponse>> GoogleLoginAsync(HttpContext httpContext)
         {
             var result = await httpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
@@ -362,6 +449,13 @@ namespace Auth_Api.Services
 
         }
 
+
+
+
+
+
+
+
         private static string GenerateRefreshToken()
         {
 
@@ -396,6 +490,7 @@ namespace Auth_Api.Services
             user.RefreshTokens.Add(new RefreshToken
             {
                 Token = refreshToken,
+                CreatedOn = DateTime.UtcNow,
                 ExpiresOn = refreshTokenExpirationDate
             });
 
@@ -417,6 +512,23 @@ namespace Auth_Api.Services
             _logger.LogInformation("Authentication successful for user {Email}", user.Email);
 
             return authResponse;
+        }
+
+        private async Task SendResetPasswordEmail(ApplicationUser user, string code)
+        {
+            var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin;
+            var emailBody = EmailBodyBuilder.GenerateEmailBody("ForgetPassword",
+                new Dictionary<string, string>()
+                {
+                    { "{{name}}",user.FirstName },
+                    {"{{action_url}}", $"{origin}/auth/forgot-password?email={user.Email}&code={code}"}
+                });
+
+             await _emailSender.SendEmailAsync(user.Email!, "Survey Basket : Change password", emailBody);
+
+            _logger.LogInformation("Reset password email sent to {Email}", user.Email);
+
+            await Task.CompletedTask;
         }
 
     }

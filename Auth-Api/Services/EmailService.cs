@@ -36,8 +36,6 @@ namespace Auth_Api.Services
 
             message.Body = builder.ToMessageBody();
 
-            _logger.LogInformation("Sending Confirmation email to {Email}", email);
-
             var smtp = new SmtpClient();
             smtp.Connect(_emailSettings.Host, _emailSettings.Port, SecureSocketOptions.StartTls);
             smtp.Authenticate(_emailSettings.Email, _emailSettings.Password);

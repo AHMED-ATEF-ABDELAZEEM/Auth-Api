@@ -17,6 +17,22 @@
   },
   {
     "ContainingType": "Auth_Api.Controllers.AuthController",
+    "Method": "ForgetPassword",
+    "RelativePath": "Auth/forget-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Auth_Api.Contracts.Auth.Requests.ForgetPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AuthController",
     "Method": "GoogleLogin",
     "RelativePath": "Auth/google",
     "HttpMethod": "GET",
@@ -90,6 +106,22 @@
       {
         "Name": "request",
         "Type": "Auth_Api.Contracts.Auth.Requests.ResendConfirmationEmailRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AuthController",
+    "Method": "ResetPassword",
+    "RelativePath": "Auth/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Auth_Api.Contracts.Auth.Requests.ResetPasswordRequest",
         "IsRequired": true
       }
     ],

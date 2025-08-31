@@ -73,6 +73,26 @@ namespace Auth_Api.Controllers
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
 
+
+
+        [HttpPost("forget-password")]
+        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _authService.SendResetPasswordEmailAsync(request.Email);
+
+            return result.IsSuccess ? Ok() : BadRequest(result.Error);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _authService.ResetPasswordAsync(request);
+
+            return result.IsSuccess ? Ok() : BadRequest(result.Error);
+        }
+
+
+
         [HttpGet("google")]
         [AllowAnonymous]
         public IActionResult GoogleLogin([FromQuery] string? returnUrl = null)
