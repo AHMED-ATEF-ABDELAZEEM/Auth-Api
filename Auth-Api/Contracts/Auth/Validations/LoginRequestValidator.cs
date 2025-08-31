@@ -1,4 +1,5 @@
-﻿using Auth_Api.Contracts.Auth.Requests;
+﻿using Auth_Api.Consts;
+using Auth_Api.Contracts.Auth.Requests;
 using FluentValidation;
 
 namespace Auth_Api.Contracts.Auth.Validations
@@ -13,7 +14,8 @@ namespace Auth_Api.Contracts.Auth.Validations
 
             RuleFor(x => x.password)
                 .NotEmpty()
-                .Length(5, 25);
+                .Matches(PasswordRules.PasswordPattern)
+                .WithMessage(PasswordRules.PasswordErrorMessage);
 
         }
     }

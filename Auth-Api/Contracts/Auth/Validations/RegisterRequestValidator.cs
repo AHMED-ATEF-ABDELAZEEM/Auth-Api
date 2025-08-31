@@ -1,4 +1,5 @@
-﻿using Auth_Api.Contracts.Auth.Requests;
+﻿using Auth_Api.Consts;
+using Auth_Api.Contracts.Auth.Requests;
 using FluentValidation;
 
 namespace Auth_Api.Contracts.Auth.Validations
@@ -13,9 +14,8 @@ namespace Auth_Api.Contracts.Auth.Validations
 
             RuleFor(x => x.Password)
                 .NotEmpty()
-                .Matches("(?=(.*[0-9]))(?=.*[\\!@#$%^&*()\\\\[\\]{}\\-_+=~`|:;\"'<>,./?])(?=.*[a-z])(?=(.*[A-Z]))(?=(.*)).{8,}")
-                .WithMessage("Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one digit, and one special character. It must match the pattern");
-
+                .Matches(PasswordRules.PasswordPattern)
+                .WithMessage(PasswordRules.PasswordErrorMessage);
 
             RuleFor(x => x.FirstName)
                 .NotEmpty()
