@@ -36,5 +36,15 @@ namespace Auth_Api.Controllers
             await _accountService.UpdateProfileAsync(userId!, request);
             return NoContent();
         }
+
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _accountService.ChangePasswordAsync(userId!, request);
+
+            return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+
+        }
     }
 }

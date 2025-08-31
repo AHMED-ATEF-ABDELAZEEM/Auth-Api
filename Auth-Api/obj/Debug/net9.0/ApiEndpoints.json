@@ -184,5 +184,21 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AccountsController",
+    "Method": "ChangePassword",
+    "RelativePath": "me/change-password",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Auth_Api.Contracts.Account.Requests.ChangePasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   }
 ]

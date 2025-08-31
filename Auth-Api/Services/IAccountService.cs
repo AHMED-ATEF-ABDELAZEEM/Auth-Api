@@ -1,5 +1,6 @@
 ﻿using Auth_Api.Contracts.Account.Requests;
 using Auth_Api.Contracts.Account.Responses;
+using Auth_Api.CustomErrors;
 using Auth_Api.CustomResult;
 using Auth_Api.Models;
 using Auth_Api.Persistence;
@@ -14,6 +15,8 @@ namespace Auth_Api.Services
         Task<Result<UserProfileResponse>> GetUserProfileAsync(string userId);
 
         Task<Result> UpdateProfileAsync(string userId, UpdateProfileRequest request);
+
+        Task<Result> ChangePasswordAsync(string userId, ChangePasswordRequest request);
     }
 
     public class AccountService : IAccountService
@@ -57,6 +60,35 @@ namespace Auth_Api.Services
             _logger.LogInformation("User profile updated for user ID: {UserId}", userId);
 
             return Result.Success();
+        }
+
+        public async Task<Result> ChangePasswordAsync(string userId, ChangePasswordRequest request)
+        {
+            _logger.LogInformation("starting change Password for userId : {userId}", userId);
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            // Check For External Login That Doestnt Has Password
+            if (user!.PasswordHash == null)
+            {
+                _logger.LogWarning("Failed to change password for user ID: {UserId}. User does not have a password", userId);
+                return Result.Failure(UserError.NoPasswordSet);
+            }
+
+
+            var result = await _userManager.ChangePasswordAsync(user!, request.currentPassword, request.newPassword);
+
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning("Failed to change password for user ID: {UserId}", userId);
+                var error = result.Errors.First();
+                return Result.Failure(new Error(error.Code, error.Description));
+            }
+
+
+            _logger.LogInformation("Password changed successfully for user ID: {UserId}", userId);
+            return Result.Success();
+
         }
     }
 }

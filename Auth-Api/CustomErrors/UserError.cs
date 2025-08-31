@@ -17,6 +17,8 @@ namespace Auth_Api.CustomErrors
         public static Error LockedOut = new("User.LockedOut", "Your account has been locked due to multiple failed login attempts. Please try again later.");
 
         public static Error ExternalLogin = new Error("User.ExternalLogin","This account is linked to an external provider. Please login using Google instead of email and password.");
+
+        public static Error NoPasswordSet = new Error("User.NoPasswordSet","This account does not have a password. Please set a password before attempting to change it.");
     }
 
     public static class ExternalAuthError
