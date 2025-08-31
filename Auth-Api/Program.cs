@@ -66,6 +66,7 @@ namespace Auth_Api
             builder.Services.AddSingleton<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IEmailSender, EmailService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
 
             builder.Services.AddHttpContextAccessor();
 

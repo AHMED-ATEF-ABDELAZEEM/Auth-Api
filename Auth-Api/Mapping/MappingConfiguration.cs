@@ -1,4 +1,5 @@
-﻿using Auth_Api.Contracts.Auth.Requests;
+﻿using Auth_Api.Contracts.Account.Responses;
+using Auth_Api.Contracts.Auth.Requests;
 using Auth_Api.Models;
 using Mapster;
 
@@ -13,6 +14,9 @@ namespace Auth_Api.Mapping
 
             config.NewConfig<RegisterRequest,ApplicationUser>()
                 .Map(dest => dest.UserName, src => src.Email);
+
+            config.NewConfig< ApplicationUser,UserProfileResponse>()
+                .Map(dest => dest.HasPassword, src => src.PasswordHash != null);
         }
     }
 }

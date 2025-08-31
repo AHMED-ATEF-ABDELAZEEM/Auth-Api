@@ -158,5 +158,15 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AccountsController",
+    "Method": "GetUserProfile",
+    "RelativePath": "me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
   }
 ]
