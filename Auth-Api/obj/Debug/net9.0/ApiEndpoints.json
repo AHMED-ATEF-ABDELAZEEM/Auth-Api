@@ -200,5 +200,21 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AccountsController",
+    "Method": "SetPassword",
+    "RelativePath": "me/set-password",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Auth_Api.Contracts.Account.Requests.SetPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   }
 ]

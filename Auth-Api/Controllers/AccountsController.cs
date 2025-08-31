@@ -46,5 +46,13 @@ namespace Auth_Api.Controllers
             return result.IsSuccess ? NoContent() : BadRequest(result.Error);
 
         }
+
+        [HttpPut("set-password")]
+        public async Task<IActionResult> SetPassword([FromBody] SetPasswordRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _accountService.SetPasswordAsync(userId!, request);
+            return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+        }
     }
 }
