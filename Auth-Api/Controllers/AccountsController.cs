@@ -1,4 +1,5 @@
-﻿using Auth_Api.Services;
+﻿using Auth_Api.Contracts.Account.Requests;
+using Auth_Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,14 @@ namespace Auth_Api.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _accountService.GetUserProfileAsync(userId!);
             return Ok(result.Value);
+        }
+
+        [HttpPut("")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            await _accountService.UpdateProfileAsync(userId!, request);
+            return NoContent();
         }
     }
 }

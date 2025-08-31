@@ -27,9 +27,4 @@
     <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Mvc" Version="1.5.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Contracts\Account\Requests\" />
-    <Folder Include="Contracts\Account\Validations\" />
-  </ItemGroup>
-
 </Project>
