@@ -5,6 +5,7 @@ using Auth_Api.CustomErrors;
 using Auth_Api.EmailSettings;
 using Auth_Api.Models;
 using Auth_Api.Persistence;
+using Auth_Api.SeedingData;
 using Auth_Api.Services;
 using FluentValidation;
 using Mapster;
@@ -70,6 +71,7 @@ namespace Auth_Api
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IEmailSender, EmailService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddTransient<AppDbSeeder>();
 
             builder.Services.AddHttpContextAccessor();
 
@@ -145,9 +147,6 @@ namespace Auth_Api
 
             });
 
-
-
-
             // Exception Handler
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
@@ -161,6 +160,12 @@ namespace Auth_Api
             });
 
             var app = builder.Build();
+
+            using (var scope =  app.Services.CreateScope())
+            {
+                var seeder = scope.ServiceProvider.GetRequiredService<AppDbSeeder>();
+                seeder.SeedAsync().GetAwaiter().GetResult(); ;
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

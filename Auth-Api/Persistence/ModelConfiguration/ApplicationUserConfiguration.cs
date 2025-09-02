@@ -1,4 +1,5 @@
 ﻿using Auth_Api.Models;
+using Auth_Api.SeedingData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
