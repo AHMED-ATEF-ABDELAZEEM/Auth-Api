@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 namespace Auth_Api.Authentication
 {
@@ -14,7 +15,7 @@ namespace Auth_Api.Authentication
     }
     public interface IJwtProvider
     {
-        TokenInformation GenerateToken(ApplicationUser User);
+        TokenInformation GenerateToken(ApplicationUser User, IEnumerable<string> roles);
 
         string? ValidateToken(string token);
     }
@@ -26,7 +27,7 @@ namespace Auth_Api.Authentication
         {
             _JwtOptions = JwtOptions.Value;
         }
-        public TokenInformation GenerateToken(ApplicationUser User)
+        public TokenInformation GenerateToken(ApplicationUser User,IEnumerable<string> roles)
         {
             var Claims = new List<Claim>
             {
@@ -35,7 +36,7 @@ namespace Auth_Api.Authentication
                 new Claim(JwtRegisteredClaimNames.GivenName,User.FirstName),
                 new Claim(JwtRegisteredClaimNames.FamilyName,User.LastName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-
+                new Claim(nameof(roles), JsonSerializer.Serialize(roles), JsonClaimValueTypes.JsonArray),
             };
 
             var SymmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JwtOptions.Key));

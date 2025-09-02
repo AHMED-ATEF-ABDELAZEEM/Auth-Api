@@ -5,6 +5,7 @@ using Auth_Api.CustomErrors;
 using Auth_Api.CustomResult;
 using Auth_Api.EmailSettings;
 using Auth_Api.Models;
+using Auth_Api.SeedingData;
 using Mapster;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -101,6 +102,8 @@ namespace Auth_Api.Services
 
             var authResponse = await GenerateAuthResponseAsync(user);
 
+            _logger.LogInformation("Authentication Success for user with email {Email}", email);
+
             return Result.Success(authResponse);
         }
 
@@ -136,37 +139,12 @@ namespace Auth_Api.Services
                 return Result.Failure<AuthResponse>(TokenError.InvalidToken);
             }
 
-            // Revoke the old refresh token
+            
             userRefreshToken.RevokedOn = DateTime.UtcNow;
             _logger.LogInformation("Revoked old refresh token for UserId {UserId}", user.Id);
 
-            // Generate new access & refresh tokens
-            var newToken = _jwtProvider.GenerateToken(user);
-            _logger.LogInformation("Generated new JWT for UserId {UserId}", user.Id);
-
-            var newRefreshToken = GenerateRefreshToken();
-            var newRefreshTokenExpiration = DateTime.UtcNow.AddDays(_RefreshTokenExpiryDays);
-
-            user.RefreshTokens.Add(new RefreshToken
-            {
-                Token = newRefreshToken,
-                ExpiresOn = newRefreshTokenExpiration
-            });
-
-            await _userManager.UpdateAsync(user);
-            _logger.LogInformation("Stored new refresh token for UserId {UserId}", user.Id);
-
-            var authResponse = new AuthResponse
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email!,
-                Token = newToken.Token,
-                ExpireIn = newToken.ExpiresIn * 60,
-                RefreshToken = newRefreshToken,
-                RefreshTokenExpiration = newRefreshTokenExpiration
-            };
+            
+            var authResponse = await GenerateAuthResponseAsync(user);
 
             _logger.LogInformation("Refresh token process completed successfully for UserId {UserId}", user.Id);
 
@@ -227,6 +205,17 @@ namespace Auth_Api.Services
 
             if (result.Succeeded)
             {
+                var roleResult = await _userManager.AddToRoleAsync(user,DefaultRoles.User);
+
+                if (!roleResult.Succeeded)
+                {
+                    _logger.LogWarning("Registration failed for email: {Email}. Errors: {Errors}", request.Email, string.Join(", ", roleResult.Errors.Select(e => e.Description)));
+                    var roleError = roleResult.Errors.First();
+                    return Result.Failure(new Error(roleError.Code, roleError.Description));
+                }
+
+                _logger.LogInformation("User Assign To Role Successfully");
+
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 // TODO
@@ -392,10 +381,6 @@ namespace Auth_Api.Services
         }
 
 
-
-
-
-
         public async Task<Result<AuthResponse>> GoogleLoginAsync(HttpContext httpContext)
         {
             var result = await httpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
@@ -451,11 +436,6 @@ namespace Auth_Api.Services
 
 
 
-
-
-
-
-
         private static string GenerateRefreshToken()
         {
 
@@ -478,15 +458,18 @@ namespace Auth_Api.Services
         {
             _logger.LogInformation("Starting Generate Token For Email : {email}", user.Email);
 
-            // Generate JWT token
-            var tokenInformation = _jwtProvider.GenerateToken(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
+            
+
+            
+            var tokenInformation = _jwtProvider.GenerateToken(user, userRoles);
             _logger.LogInformation("JWT token generated For Email : {email}", user.Email);
 
-            // Generate Refresh Token
+            
             var refreshToken = GenerateRefreshToken();
             var refreshTokenExpirationDate = DateTime.UtcNow.AddDays(_RefreshTokenExpiryDays);
 
-            // Store refresh token in DB
+            
             user.RefreshTokens.Add(new RefreshToken
             {
                 Token = refreshToken,
@@ -509,7 +492,7 @@ namespace Auth_Api.Services
                 RefreshTokenExpiration = refreshTokenExpirationDate
             };
 
-            _logger.LogInformation("Authentication successful for user {Email}", user.Email);
+            _logger.LogInformation("Generate Response successful for user {Email}", user.Email);
 
             return authResponse;
         }
