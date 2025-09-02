@@ -5,7 +5,9 @@ using Auth_Api.CustomErrors;
 using Auth_Api.CustomResult;
 using Auth_Api.EmailSettings;
 using Auth_Api.Models;
+using Auth_Api.Persistence;
 using Auth_Api.SeedingData;
+using Hangfire;
 using Mapster;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -39,6 +41,7 @@ namespace Auth_Api.Services
 
         Task<Result<AuthResponse>> GoogleLoginAsync(HttpContext httpContext);
 
+        Task RemoveExpiredRefreshTokensAsync();
     }
 
     public class AuthService : IAuthService
@@ -46,12 +49,13 @@ namespace Auth_Api.Services
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly AppDbContext _context;
         private readonly IJwtProvider _jwtProvider;
         private readonly int _RefreshTokenExpiryDays = 14;
         private readonly ILogger<AuthService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEmailSender _emailSender;
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager)
+        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, AppDbContext context)
         {
             _userManager = userManager;
             _jwtProvider = jwtProvider;
@@ -59,6 +63,7 @@ namespace Auth_Api.Services
             _httpContextAccessor = httpContextAccessor;
             _emailSender = emailSender;
             _signInManager = signInManager;
+            _context = context;
         }
 
         public async Task<Result<AuthResponse>> GetTokenAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -132,7 +137,7 @@ namespace Auth_Api.Services
                 return Result.Failure<AuthResponse>(UserError.LockedOut);
             }
 
-            var userRefreshToken = user.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken && x.IsActive);
+            var userRefreshToken = await GetActiveRefreshTokenAsync(userId, refreshToken);
             if (userRefreshToken is null)
             {
                 _logger.LogWarning("Invalid or inactive refresh token for UserId {UserId}", user.Id);
@@ -172,7 +177,7 @@ namespace Auth_Api.Services
             }
 
 
-            var userRefreshToken = user.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken && x.IsActive);
+            var userRefreshToken = await GetActiveRefreshTokenAsync(userId, refreshToken);
             if (userRefreshToken is null)
             {
                 _logger.LogWarning("Invalid or inactive refresh token for UserId {UserId}", user.Id);
@@ -180,7 +185,8 @@ namespace Auth_Api.Services
             }
 
             userRefreshToken.RevokedOn = DateTime.UtcNow;
-            await _userManager.UpdateAsync(user);
+            _context.RefreshTokens.Update(userRefreshToken);
+            await _context.SaveChangesAsync();
 
             _logger.LogInformation("Refresh token revoked successfully for UserId {UserId}", user.Id);
 
@@ -302,8 +308,6 @@ namespace Auth_Api.Services
             return Result.Success();
         }
 
-
-
         public async Task<Result> SendResetPasswordEmailAsync(string email)
         {
 
@@ -419,6 +423,14 @@ namespace Auth_Api.Services
                 if (addResult.Succeeded)
                 {
                     _logger.LogInformation("Added User Successfully With Email : {email}", email);
+                    var roleResult = await _userManager.AddToRoleAsync(user, DefaultRoles.User);
+                    if (!roleResult.Succeeded)
+                    {
+                        _logger.LogWarning("Failed to assign role to Google user");
+                        var error = roleResult.Errors.First();
+                        return Result.Failure<AuthResponse>(new Error(error.Code, error.Description));
+                    }
+                    _logger.LogInformation("User Assign To Role Successfully");
                 }
                 else
                 {
@@ -434,7 +446,14 @@ namespace Auth_Api.Services
 
         }
 
-
+        public async Task RemoveExpiredRefreshTokensAsync()
+        {
+            _logger.LogInformation("Start Removing expired refresh tokens");
+            var refreshTokens = await _context.RefreshTokens.Where(r => r.ExpiresOn <= DateTime.UtcNow || r.RevokedOn != null).ToListAsync();
+            _context.RefreshTokens.RemoveRange(refreshTokens);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Finished Removing expired refresh tokens");
+        }
 
         private static string GenerateRefreshToken()
         {
@@ -451,16 +470,17 @@ namespace Auth_Api.Services
                     { "{{name}}",user.FirstName },
                     {"{{action_url}}", $"{origin}/auth/confirm-email?userId={user.Id}&code={code}"}
                 });
-            await _emailSender.SendEmailAsync(user.Email!, "Survey Basket : Confirm your email", emailBody);
+
+            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(user.Email!, "Survey Basket : Confirm your email", emailBody));
+
+            await Task.CompletedTask;
         }
 
         private async Task <AuthResponse> GenerateAuthResponseAsync(ApplicationUser user)
         {
             _logger.LogInformation("Starting Generate Token For Email : {email}", user.Email);
 
-            var userRoles = await _userManager.GetRolesAsync(user);
-            
-
+            var userRoles = await _userManager.GetRolesAsync(user);          
             
             var tokenInformation = _jwtProvider.GenerateToken(user, userRoles);
             _logger.LogInformation("JWT token generated For Email : {email}", user.Email);
@@ -470,14 +490,16 @@ namespace Auth_Api.Services
             var refreshTokenExpirationDate = DateTime.UtcNow.AddDays(_RefreshTokenExpiryDays);
 
             
-            user.RefreshTokens.Add(new RefreshToken
+           var refreshTokenEntity = new RefreshToken
             {
                 Token = refreshToken,
                 CreatedOn = DateTime.UtcNow,
-                ExpiresOn = refreshTokenExpirationDate
-            });
+                ExpiresOn = refreshTokenExpirationDate,
+                UserId = user.Id
+            };
+           await _context.RefreshTokens.AddAsync(refreshTokenEntity);
+           await _context.SaveChangesAsync();
 
-            await _userManager.UpdateAsync(user);
             _logger.LogInformation("Refresh token stored in database for user {Email}", user.Email);
 
             var authResponse = new AuthResponse
@@ -507,11 +529,21 @@ namespace Auth_Api.Services
                     {"{{action_url}}", $"{origin}/auth/forgot-password?email={user.Email}&code={code}"}
                 });
 
-             await _emailSender.SendEmailAsync(user.Email!, "Survey Basket : Change password", emailBody);
-
+            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(user.Email!, "Survey Basket : Reset password", emailBody));
+           
             _logger.LogInformation("Reset password email sent to {Email}", user.Email);
 
             await Task.CompletedTask;
+        }
+
+        private async Task<RefreshToken?> GetActiveRefreshTokenAsync (string userId, string refreshToken)
+        {
+            return await _context.RefreshTokens
+                .Where(r => r.UserId == userId 
+                && r.Token == refreshToken 
+                && r.RevokedOn == null
+                && r.ExpiresOn > DateTime.UtcNow)
+                .SingleOrDefaultAsync();
         }
 
     }

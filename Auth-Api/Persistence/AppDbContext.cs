@@ -11,7 +11,7 @@ namespace Auth_Api.Persistence
         {
 
         }
-
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

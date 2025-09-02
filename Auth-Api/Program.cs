@@ -8,6 +8,8 @@ using Auth_Api.Persistence;
 using Auth_Api.SeedingData;
 using Auth_Api.Services;
 using FluentValidation;
+using Hangfire;
+using HangfireBasicAuthenticationFilter;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
@@ -159,11 +161,21 @@ namespace Auth_Api
 
             });
 
+            // Add Hangfire services.
+            builder.Services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection")));
+
+            // Add the processing server as IHostedService
+            builder.Services.AddHangfireServer();
+
             var app = builder.Build();
 
-            using (var scope =  app.Services.CreateScope())
+            using (var _scope =  app.Services.CreateScope())
             {
-                var seeder = scope.ServiceProvider.GetRequiredService<AppDbSeeder>();
+                var seeder = _scope.ServiceProvider.GetRequiredService<AppDbSeeder>();
                 seeder.SeedAsync().GetAwaiter().GetResult(); ;
             }
 
@@ -177,6 +189,24 @@ namespace Auth_Api
             app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
+
+            app.UseHangfireDashboard("/jobs", new DashboardOptions
+            {
+                Authorization =
+                [
+                    new HangfireCustomBasicAuthenticationFilter
+                    {
+                        User = app.Configuration.GetValue<string>("HangfireSettings:UserName"),
+                        Pass = app.Configuration.GetValue<string>("HangfireSettings:Password")
+                    }
+                ]
+            });
+
+            //var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+            //using var scope = scopeFactory.CreateScope();
+            //var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+
+            //RecurringJob.AddOrUpdate("RemoveExpiredRefreshTokens",() => authService.RemoveExpiredRefreshTokensAsync(), Cron.Daily);
 
             app.UseRateLimiter();
 

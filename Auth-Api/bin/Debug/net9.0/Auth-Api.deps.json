@@ -9,6 +9,10 @@
       "Auth-Api/1.0.0": {
         "dependencies": {
           "FluentValidation.DependencyInjectionExtensions": "12.0.0",
+          "Hangfire.AspNetCore": "1.8.21",
+          "Hangfire.Core": "1.8.21",
+          "Hangfire.Dashboard.Basic.Authentication": "8.0.0",
+          "Hangfire.SqlServer": "1.8.21",
           "MailKit": "4.13.0",
           "Mapster": "7.4.0",
           "Mapster.DependencyInjection": "1.0.1",
@@ -86,6 +90,112 @@
           "lib/net8.0/FluentValidation.DependencyInjectionExtensions.dll": {
             "assemblyVersion": "12.0.0.0",
             "fileVersion": "12.0.0.0"
+          }
+        }
+      },
+      "Hangfire.AspNetCore/1.8.21": {
+        "dependencies": {
+          "Hangfire.NetCore": "1.8.21"
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/Hangfire.AspNetCore.dll": {
+            "assemblyVersion": "1.8.21.0",
+            "fileVersion": "1.8.21.0"
+          }
+        }
+      },
+      "Hangfire.Core/1.8.21": {
+        "dependencies": {
+          "Newtonsoft.Json": "11.0.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Hangfire.Core.dll": {
+            "assemblyVersion": "1.8.21.0",
+            "fileVersion": "1.8.21.0"
+          }
+        },
+        "resources": {
+          "lib/netstandard2.0/ca/Hangfire.Core.resources.dll": {
+            "locale": "ca"
+          },
+          "lib/netstandard2.0/de/Hangfire.Core.resources.dll": {
+            "locale": "de"
+          },
+          "lib/netstandard2.0/es/Hangfire.Core.resources.dll": {
+            "locale": "es"
+          },
+          "lib/netstandard2.0/fa/Hangfire.Core.resources.dll": {
+            "locale": "fa"
+          },
+          "lib/netstandard2.0/fr/Hangfire.Core.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/netstandard2.0/nb/Hangfire.Core.resources.dll": {
+            "locale": "nb"
+          },
+          "lib/netstandard2.0/nl/Hangfire.Core.resources.dll": {
+            "locale": "nl"
+          },
+          "lib/netstandard2.0/pt-BR/Hangfire.Core.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/netstandard2.0/pt-PT/Hangfire.Core.resources.dll": {
+            "locale": "pt-PT"
+          },
+          "lib/netstandard2.0/pt/Hangfire.Core.resources.dll": {
+            "locale": "pt"
+          },
+          "lib/netstandard2.0/sv/Hangfire.Core.resources.dll": {
+            "locale": "sv"
+          },
+          "lib/netstandard2.0/tr-TR/Hangfire.Core.resources.dll": {
+            "locale": "tr-TR"
+          },
+          "lib/netstandard2.0/zh-TW/Hangfire.Core.resources.dll": {
+            "locale": "zh-TW"
+          },
+          "lib/netstandard2.0/zh/Hangfire.Core.resources.dll": {
+            "locale": "zh"
+          }
+        }
+      },
+      "Hangfire.Dashboard.Basic.Authentication/8.0.0": {
+        "dependencies": {
+          "Hangfire.AspNetCore": "1.8.21",
+          "Hangfire.Core": "1.8.21",
+          "Microsoft.AspNetCore.Http": "2.2.2",
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.5",
+          "Microsoft.Extensions.Primitives": "9.0.5"
+        },
+        "runtime": {
+          "lib/net8.0/HangfireBasicAuthenticationFilter.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.0.0"
+          }
+        }
+      },
+      "Hangfire.NetCore/1.8.21": {
+        "dependencies": {
+          "Hangfire.Core": "1.8.21",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.5",
+          "Microsoft.Extensions.Hosting.Abstractions": "9.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.5"
+        },
+        "runtime": {
+          "lib/netstandard2.1/Hangfire.NetCore.dll": {
+            "assemblyVersion": "1.8.21.0",
+            "fileVersion": "1.8.21.0"
+          }
+        }
+      },
+      "Hangfire.SqlServer/1.8.21": {
+        "dependencies": {
+          "Hangfire.Core": "1.8.21"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Hangfire.SqlServer.dll": {
+            "assemblyVersion": "1.8.21.0",
+            "fileVersion": "1.8.21.0"
           }
         }
       },
@@ -178,6 +288,26 @@
           }
         }
       },
+      "Microsoft.AspNetCore.Http/2.2.2": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Http.Abstractions": "2.2.0",
+          "Microsoft.AspNetCore.WebUtilities": "2.2.0",
+          "Microsoft.Extensions.ObjectPool": "2.2.0",
+          "Microsoft.Extensions.Options": "9.0.5",
+          "Microsoft.Net.Http.Headers": "2.2.0"
+        }
+      },
+      "Microsoft.AspNetCore.Http.Abstractions/2.2.0": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Http.Features": "2.2.0",
+          "System.Text.Encodings.Web": "6.0.0"
+        }
+      },
+      "Microsoft.AspNetCore.Http.Features/2.2.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "9.0.5"
+        }
+      },
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore/9.0.5": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Relational": "9.0.5",
@@ -199,6 +329,12 @@
             "assemblyVersion": "9.0.5.0",
             "fileVersion": "9.0.525.22904"
           }
+        }
+      },
+      "Microsoft.AspNetCore.WebUtilities/2.2.0": {
+        "dependencies": {
+          "Microsoft.Net.Http.Headers": "2.2.0",
+          "System.Text.Encodings.Web": "6.0.0"
         }
       },
       "Microsoft.Bcl.AsyncInterfaces/7.0.0": {
@@ -779,6 +915,7 @@
           }
         }
       },
+      "Microsoft.Extensions.ObjectPool/2.2.0": {},
       "Microsoft.Extensions.Options/9.0.5": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.5",
@@ -887,6 +1024,12 @@
           }
         }
       },
+      "Microsoft.Net.Http.Headers/2.2.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "9.0.5",
+          "System.Buffers": "4.5.0"
+        }
+      },
       "Microsoft.OpenApi/1.6.17": {
         "runtime": {
           "lib/netstandard2.0/Microsoft.OpenApi.dll": {
@@ -939,6 +1082,14 @@
           "lib/net6.0/Mono.TextTemplating.dll": {
             "assemblyVersion": "3.0.0.0",
             "fileVersion": "3.0.0.1"
+          }
+        }
+      },
+      "Newtonsoft.Json/11.0.1": {
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "11.0.0.0",
+            "fileVersion": "11.0.1.21818"
           }
         }
       },
@@ -1073,6 +1224,7 @@
           }
         }
       },
+      "System.Buffers/4.5.0": {},
       "System.ClientModel/1.0.0": {
         "dependencies": {
           "System.Memory.Data": "1.0.2",
@@ -1360,6 +1512,41 @@
       "path": "fluentvalidation.dependencyinjectionextensions/12.0.0",
       "hashPath": "fluentvalidation.dependencyinjectionextensions.12.0.0.nupkg.sha512"
     },
+    "Hangfire.AspNetCore/1.8.21": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-G3yP92rPC313zRA1DIaROmF6UYB9NRtMHy64CCq4StqWmyUuFQQsYgZxo+Kp6gd2CbjaSI8JN8canTMYSGfrMw==",
+      "path": "hangfire.aspnetcore/1.8.21",
+      "hashPath": "hangfire.aspnetcore.1.8.21.nupkg.sha512"
+    },
+    "Hangfire.Core/1.8.21": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-UfIDfDKJTue82ShKV/HHEBScAIJMnuiS8c5jcLHThY8i8O0eibCcNjFkVqlvY9cnDiOBZ7EBGWJ8horH9Ykq+g==",
+      "path": "hangfire.core/1.8.21",
+      "hashPath": "hangfire.core.1.8.21.nupkg.sha512"
+    },
+    "Hangfire.Dashboard.Basic.Authentication/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-sOYBeFePIohQZLzRHOWdWgnSJz9bhcJ3yEWYH2uvwUkFjFANOlGaO1dtFHZfCkjFleBpO+gCBvTDYNPmCpCGrQ==",
+      "path": "hangfire.dashboard.basic.authentication/8.0.0",
+      "hashPath": "hangfire.dashboard.basic.authentication.8.0.0.nupkg.sha512"
+    },
+    "Hangfire.NetCore/1.8.21": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-NR8BvQqgvVstgY/YZVisuV/XdkKSZGiD+5b+NABuGxu/xDEhycFHS1uIC9zhIYkPr1tThGoThRIH07JWxPZTvQ==",
+      "path": "hangfire.netcore/1.8.21",
+      "hashPath": "hangfire.netcore.1.8.21.nupkg.sha512"
+    },
+    "Hangfire.SqlServer/1.8.21": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uGz9yfyC9hrI4zGWQivpdOv4tLlueKRc1tYN/+/NcsAcW3ciN0fmG4OPpCb7je0+7z/SGBGDpzNrXUiF2x7rHQ==",
+      "path": "hangfire.sqlserver/1.8.21",
+      "hashPath": "hangfire.sqlserver.1.8.21.nupkg.sha512"
+    },
     "Humanizer.Core/2.14.1": {
       "type": "package",
       "serviceable": true,
@@ -1423,6 +1610,27 @@
       "path": "microsoft.aspnetcore.cryptography.keyderivation/9.0.5",
       "hashPath": "microsoft.aspnetcore.cryptography.keyderivation.9.0.5.nupkg.sha512"
     },
+    "Microsoft.AspNetCore.Http/2.2.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-BAibpoItxI5puk7YJbIGj95arZueM8B8M5xT1fXBn3hb3L2G3ucrZcYXv1gXdaroLbntUs8qeV8iuBrpjQsrKw==",
+      "path": "microsoft.aspnetcore.http/2.2.2",
+      "hashPath": "microsoft.aspnetcore.http.2.2.2.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Http.Abstractions/2.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Nxs7Z1q3f1STfLYKJSVXCs1iBl+Ya6E8o4Oy1bCxJ/rNI44E/0f6tbsrVqAWfB7jlnJfyaAtIalBVxPKUPQb4Q==",
+      "path": "microsoft.aspnetcore.http.abstractions/2.2.0",
+      "hashPath": "microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Http.Features/2.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ziFz5zH8f33En4dX81LW84I6XrYXKf9jg6aM39cM+LffN9KJahViKZ61dGMSO2gd3e+qe5yBRwsesvyqlZaSMg==",
+      "path": "microsoft.aspnetcore.http.features/2.2.0",
+      "hashPath": "microsoft.aspnetcore.http.features.2.2.0.nupkg.sha512"
+    },
     "Microsoft.AspNetCore.Identity.EntityFrameworkCore/9.0.5": {
       "type": "package",
       "serviceable": true,
@@ -1436,6 +1644,13 @@
       "sha512": "sha512-yZLOciYlpaOO/mHPOpgeSZTv8Lc7fOOVX40eWJJoGs/S9Ny9CymDuKKQofGE9stXGGM9EEnnuPeq0fhR8kdFfg==",
       "path": "microsoft.aspnetcore.openapi/9.0.5",
       "hashPath": "microsoft.aspnetcore.openapi.9.0.5.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.WebUtilities/2.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9ErxAAKaDzxXASB/b5uLEkLgUWv1QbeVxyJYEHQwMaxXOeFFVkQxiq8RyfVcifLU7NR0QY0p3acqx4ZpYfhHDg==",
+      "path": "microsoft.aspnetcore.webutilities/2.2.0",
+      "hashPath": "microsoft.aspnetcore.webutilities.2.2.0.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/7.0.0": {
       "type": "package",
@@ -1661,6 +1876,13 @@
       "path": "microsoft.extensions.logging.abstractions/9.0.5",
       "hashPath": "microsoft.extensions.logging.abstractions.9.0.5.nupkg.sha512"
     },
+    "Microsoft.Extensions.ObjectPool/2.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gA8H7uQOnM5gb+L0uTNjViHYr+hRDqCdfugheGo/MxQnuHzmhhzCBTIPm19qL1z1Xe0NEMabfcOBGv9QghlZ8g==",
+      "path": "microsoft.extensions.objectpool/2.2.0",
+      "hashPath": "microsoft.extensions.objectpool.2.2.0.nupkg.sha512"
+    },
     "Microsoft.Extensions.Options/9.0.5": {
       "type": "package",
       "serviceable": true,
@@ -1731,6 +1953,13 @@
       "path": "microsoft.identitymodel.tokens/8.0.1",
       "hashPath": "microsoft.identitymodel.tokens.8.0.1.nupkg.sha512"
     },
+    "Microsoft.Net.Http.Headers/2.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-iZNkjYqlo8sIOI0bQfpsSoMTmB/kyvmV2h225ihyZT33aTp48ZpF6qYnXxzSXmHt8DpBAwBTX+1s1UFLbYfZKg==",
+      "path": "microsoft.net.http.headers/2.2.0",
+      "hashPath": "microsoft.net.http.headers.2.2.0.nupkg.sha512"
+    },
     "Microsoft.OpenApi/1.6.17": {
       "type": "package",
       "serviceable": true,
@@ -1765,6 +1994,13 @@
       "sha512": "sha512-YqueG52R/Xej4VVbKuRIodjiAhV0HR/XVbLbNrJhCZnzjnSjgMJ/dCdV0akQQxavX6hp/LC6rqLGLcXeQYU7XA==",
       "path": "mono.texttemplating/3.0.0",
       "hashPath": "mono.texttemplating.3.0.0.nupkg.sha512"
+    },
+    "Newtonsoft.Json/11.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pNN4l+J6LlpIvHOeNdXlwxv39NPJ2B5klz+Rd2UQZIx30Squ5oND1Yy3wEAUoKn0GPUj6Yxt9lxlYWQqfZcvKg==",
+      "path": "newtonsoft.json/11.0.1",
+      "hashPath": "newtonsoft.json.11.0.1.nupkg.sha512"
     },
     "Serilog/4.2.0": {
       "type": "package",
@@ -1842,6 +2078,13 @@
       "sha512": "sha512-vTZhTWRrTk051yXEOmkU9jMbHuckcBTW7P/3o1SX7R7arJ+JhTNinVeECkLJRcliW6qMto5aYRI2GEOP+DR4Dg==",
       "path": "sharpgrip.fluentvalidation.autovalidation.shared/1.5.0",
       "hashPath": "sharpgrip.fluentvalidation.autovalidation.shared.1.5.0.nupkg.sha512"
+    },
+    "System.Buffers/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pL2ChpaRRWI/p4LXyy4RgeWlYF2sgfj/pnVMvBqwNFr5cXg7CXNnWZWxrOONLg8VGdFB8oB+EG2Qw4MLgTOe+A==",
+      "path": "system.buffers/4.5.0",
+      "hashPath": "system.buffers.4.5.0.nupkg.sha512"
     },
     "System.ClientModel/1.0.0": {
       "type": "package",

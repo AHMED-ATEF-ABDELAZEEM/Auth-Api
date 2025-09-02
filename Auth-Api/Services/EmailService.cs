@@ -20,6 +20,7 @@ namespace Auth_Api.Services
         }
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
+
             var message = new MimeMessage
             {
                 Sender = MailboxAddress.Parse(_emailSettings.Email),
