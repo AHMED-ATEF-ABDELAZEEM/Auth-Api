@@ -1,4 +1,5 @@
-﻿using Auth_Api.Contracts.Auth.Requests;
+﻿using Auth_Api.Consts;
+using Auth_Api.Contracts.Auth.Requests;
 using Auth_Api.Models;
 using Auth_Api.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 
@@ -13,16 +15,15 @@ namespace Auth_Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [EnableRateLimiting(RateLimiters.IpLimit)]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
-        public AuthController(IAuthService authService, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+        public AuthController(IAuthService authService, SignInManager<ApplicationUser> signInManager)
         {
             _authService = authService;
             _signInManager = signInManager;
-            _userManager = userManager;
         }
 
         [HttpPost("login")]

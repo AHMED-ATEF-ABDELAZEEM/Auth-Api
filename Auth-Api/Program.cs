@@ -1,5 +1,6 @@
 ﻿
 using Auth_Api.Authentication;
+using Auth_Api.Consts;
 using Auth_Api.CustomErrors;
 using Auth_Api.EmailSettings;
 using Auth_Api.Models;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Connections.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -22,6 +24,7 @@ using Serilog;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System.Reflection;
 using System.Text;
+using System.Threading.RateLimiting;
 
 namespace Auth_Api
 {
@@ -102,6 +105,46 @@ namespace Auth_Api
                 options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
             });
 
+            // Rate Limiter
+            builder.Services.AddRateLimiter(rateLimiterOptions =>
+            {
+                rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+                rateLimiterOptions.AddPolicy(policyName: RateLimiters.IpLimit, httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter<string>(
+                        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString()!,
+                        factory: partition => new FixedWindowRateLimiterOptions
+                        {
+                            AutoReplenishment = true,
+                            PermitLimit = 20,
+                            Window = TimeSpan.FromMinutes(1)
+                        }
+
+                    )
+                );
+
+                rateLimiterOptions.AddPolicy(policyName: RateLimiters.UserLimit, httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter<string>(
+                        partitionKey: httpContext.User.Identity?.Name?.ToString()!,
+                        factory: partition => new FixedWindowRateLimiterOptions
+                        {
+                            AutoReplenishment = true,
+                            PermitLimit = 100,
+                            Window = TimeSpan.FromMinutes(1)
+                        }
+
+                    )
+                );
+
+                rateLimiterOptions.AddConcurrencyLimiter(policyName: RateLimiters.ConcurrencyLimit, options =>
+                {
+                    options.PermitLimit = 1000;
+                    options.QueueLimit = 100;
+                    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                });
+
+            });
+
 
 
 
@@ -129,6 +172,8 @@ namespace Auth_Api
             app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
+
+            app.UseRateLimiter();
 
             app.UseAuthentication();
 

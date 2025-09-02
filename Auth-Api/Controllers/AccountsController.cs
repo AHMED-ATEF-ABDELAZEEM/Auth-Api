@@ -1,8 +1,10 @@
-﻿using Auth_Api.Contracts.Account.Requests;
+﻿using Auth_Api.Consts;
+using Auth_Api.Contracts.Account.Requests;
 using Auth_Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Identity.Client;
 using System.Security.Claims;
 
@@ -11,6 +13,7 @@ namespace Auth_Api.Controllers
     [Route("me")]
     [ApiController]
     [Authorize]
+    [EnableRateLimiting(RateLimiters.UserLimit)]
     public class AccountsController : ControllerBase
     {
         private readonly IAccountService _accountService;
