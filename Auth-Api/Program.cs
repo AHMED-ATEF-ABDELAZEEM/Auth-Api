@@ -1,5 +1,6 @@
 ﻿
 using Auth_Api.Authentication;
+using Auth_Api.Cache;
 using Auth_Api.Consts;
 using Auth_Api.CustomErrors;
 using Auth_Api.EmailSettings;
@@ -73,7 +74,10 @@ namespace Auth_Api
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IEmailSender, EmailService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<ITemporarySessionStore, MemoryTemporarySessionStore>();
             builder.Services.AddTransient<AppDbSeeder>();
+
+            builder.Services.AddMemoryCache();
 
             builder.Services.AddHttpContextAccessor();
 

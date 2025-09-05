@@ -11,4 +11,11 @@
         public string RefreshToken { get; set; }
         public DateTime RefreshTokenExpiration { get; set; }
     }
+
+    public class LoginResponse
+    {
+        public bool RequiresTwoFactor { get; set; }
+        public string? SessionId { get; set; }
+        public AuthResponse? AuthResponse { get; set; }
+    }
 }

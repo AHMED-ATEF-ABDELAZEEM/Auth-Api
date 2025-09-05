@@ -20,6 +20,7 @@ namespace Auth_Api.Controllers
     {
         private readonly IAuthService _authService;
         private readonly SignInManager<ApplicationUser> _signInManager;
+
         public AuthController(IAuthService authService, SignInManager<ApplicationUser> signInManager)
         {
             _authService = authService;
@@ -29,7 +30,7 @@ namespace Auth_Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LogIn([FromBody] LoginRequest request, CancellationToken cancellationToken)
         {
-            var result = await _authService.GetTokenAsync(request.email, request.password, cancellationToken);
+            var result = await _authService.LoginAsync(request.email, request.password, cancellationToken);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }

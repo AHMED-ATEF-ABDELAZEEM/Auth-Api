@@ -1,4 +1,5 @@
 ﻿using Auth_Api.Authentication;
+using Auth_Api.Cache;
 using Auth_Api.Contracts.Auth.Requests;
 using Auth_Api.Contracts.Auth.Responses;
 using Auth_Api.CustomErrors;
@@ -23,7 +24,7 @@ namespace Auth_Api.Services
 {
     public interface IAuthService
     {
-        Task<Result<AuthResponse>> GetTokenAsync (string email,string password,CancellationToken cancellationToken = default);
+        Task<Result<LoginResponse>> LoginAsync (string email,string password,CancellationToken cancellationToken = default);
 
         Task<Result<AuthResponse>> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
 
@@ -55,7 +56,8 @@ namespace Auth_Api.Services
         private readonly ILogger<AuthService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEmailSender _emailSender;
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, AppDbContext context)
+        private readonly ITemporarySessionStore _temporarySessionStore;
+        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, AppDbContext context, ITemporarySessionStore temporarySessionStore)
         {
             _userManager = userManager;
             _jwtProvider = jwtProvider;
@@ -64,31 +66,32 @@ namespace Auth_Api.Services
             _emailSender = emailSender;
             _signInManager = signInManager;
             _context = context;
+            _temporarySessionStore = temporarySessionStore;
         }
 
-        public async Task<Result<AuthResponse>> GetTokenAsync(string email, string password, CancellationToken cancellationToken = default)
+        public async Task<Result<LoginResponse>> LoginAsync(string email, string password, CancellationToken cancellationToken = default)
         {
 
-            _logger.LogInformation("Starting token generation process for user with email {Email}", email);
+            _logger.LogInformation("Starting Login process for user with email {Email}", email);
 
             var user = await _userManager.FindByEmailAsync(email);
 
             if (user is null)
             {
                 _logger.LogWarning("Authentication failed: User with email {Email} not found", email);
-                return Result.Failure<AuthResponse>(UserError.InvalidCredentials);
+                return Result.Failure<LoginResponse>(UserError.InvalidCredentials);
             }
 
             if (user.PasswordHash is null)
             {
                 _logger.LogWarning("Authentication failed: User with email {Email} has no password (External Login)", email);
-                return Result.Failure<AuthResponse>(UserError.ExternalLogin);
+                return Result.Failure<LoginResponse>(UserError.ExternalLogin);
             }
 
             if (!user.EmailConfirmed)
             {
                 _logger.LogWarning("Authentication failed: User with email {Email} is not confirmed", email);
-                return Result.Failure<AuthResponse>(UserError.EmailNotConfirmed);
+                return Result.Failure<LoginResponse>(UserError.EmailNotConfirmed);
             }
 
             var  result = await _signInManager.PasswordSignInAsync(user, password, false,lockoutOnFailure: true);
@@ -96,20 +99,37 @@ namespace Auth_Api.Services
             if (result.IsLockedOut)
             {
                 _logger.LogWarning("Authentication failed: User with email {Email} is locked out", email);
-                return Result.Failure<AuthResponse>(UserError.LockedOut);
+                return Result.Failure<LoginResponse>(UserError.LockedOut);
+            }
+
+            var loginResponse = new LoginResponse();
+
+
+            if (result.RequiresTwoFactor)
+            {
+                _logger.LogInformation("Two-Factor Authentication required. Generating temporary session for user : {email}",user.Email);
+                var sessionId = Guid.NewGuid().ToString();
+                await _temporarySessionStore.SetAsync(sessionId, user.Id, TimeSpan.FromMinutes(2));
+                loginResponse.RequiresTwoFactor = true;
+                loginResponse.SessionId = sessionId;
+                _logger.LogInformation("Temporary 2FA session stored successfully.");
+                return Result.Success(loginResponse);
+
             }
 
             if (!result.Succeeded)
             {
                 _logger.LogWarning("Authentication failed: Invalid password for user with email {Email}", email);
-                return Result.Failure<AuthResponse>(UserError.InvalidCredentials);
+                return Result.Failure<LoginResponse>(UserError.InvalidCredentials);
             }
 
             var authResponse = await GenerateAuthResponseAsync(user);
 
+            loginResponse.AuthResponse = authResponse;
+
             _logger.LogInformation("Authentication Success for user with email {Email}", email);
 
-            return Result.Success(authResponse);
+            return Result.Success(loginResponse);
         }
 
         public async Task<Result<AuthResponse>> GetRefreshTokenAsync(string token,string refreshToken,CancellationToken cancellationToken = default)
