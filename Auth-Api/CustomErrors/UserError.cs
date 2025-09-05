@@ -42,5 +42,10 @@ namespace Auth_Api.CustomErrors
             "TwoFactor.InvalidCode",
             "The code you entered is invalid. Please try again."
         );
+
+        public static Error InvalidSession = new Error(
+            "TwoFactor.InvalidSession",
+            "The 2FA session is invalid or expired."
+        );
     }
 }

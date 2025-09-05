@@ -26,6 +26,8 @@ namespace Auth_Api.Services
     {
         Task<Result<LoginResponse>> LoginAsync (string email,string password,CancellationToken cancellationToken = default);
 
+        Task<Result<AuthResponse>> CompleteTwoFactorLoginAsync(string sessionId, string code);
+
         Task<Result<AuthResponse>> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
 
         Task<Result> RevokeRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
@@ -131,6 +133,48 @@ namespace Auth_Api.Services
 
             return Result.Success(loginResponse);
         }
+
+
+        public async Task<Result<AuthResponse>> CompleteTwoFactorLoginAsync(string sessionId, string code)
+        {
+
+            _logger.LogInformation("Starting 2FA login process for session ID: {SessionId}", sessionId);
+
+            var userId = await _temporarySessionStore.GetAsync(sessionId);
+            if (userId == null)
+            {
+                _logger.LogWarning("2FA login failed: Invalid session ID: {SessionId}", sessionId);
+                return Result.Failure<AuthResponse>(TwoFactorError.InvalidSession);
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                _logger.LogWarning("2FA login failed: User not found for session ID: {SessionId}", sessionId);
+                return Result.Failure<AuthResponse>(TwoFactorError.InvalidSession);
+            }
+
+            var cleanCode = code.Replace(" ", "").Replace("-", "");
+
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(
+                user,
+                TokenOptions.DefaultAuthenticatorProvider,
+                cleanCode);
+
+            if (!isValid)
+            {
+                _logger.LogWarning("2FA login failed: Invalid code for User : {Email}", user.Email);
+                return Result.Failure<AuthResponse>(TwoFactorError.InvalidCode);
+            }
+
+            var authResponse = await GenerateAuthResponseAsync(user);
+
+            await _temporarySessionStore.RemoveAsync(sessionId);
+            _logger.LogInformation("Remove session for User : {Email}", user.Email);
+            _logger.LogInformation("2FA login Success for User : {Email}", user.Email);
+            return Result.Success(authResponse);
+        }
+
 
         public async Task<Result<AuthResponse>> GetRefreshTokenAsync(string token,string refreshToken,CancellationToken cancellationToken = default)
         {

@@ -1,4 +1,5 @@
 ﻿using Auth_Api.Consts;
+using Auth_Api.Contracts.Account.Requests;
 using Auth_Api.Contracts.Auth.Requests;
 using Auth_Api.Models;
 using Auth_Api.Services;
@@ -31,6 +32,14 @@ namespace Auth_Api.Controllers
         public async Task<IActionResult> LogIn([FromBody] LoginRequest request, CancellationToken cancellationToken)
         {
             var result = await _authService.LoginAsync(request.email, request.password, cancellationToken);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
+        [HttpPost("2fa/complete")]
+        public async Task<IActionResult> CompleteTwoFactorLogin([FromBody] TwoFactorLoginRequest request)
+        {
+            var result = await _authService.CompleteTwoFactorLoginAsync(request.SessionId, request.Code);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }

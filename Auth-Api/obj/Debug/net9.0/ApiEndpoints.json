@@ -1,6 +1,22 @@
 [
   {
     "ContainingType": "Auth_Api.Controllers.AuthController",
+    "Method": "CompleteTwoFactorLogin",
+    "RelativePath": "Auth/2fa/complete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Auth_Api.Contracts.Account.Requests.TwoFactorLoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AuthController",
     "Method": "ConfirmEmail",
     "RelativePath": "Auth/confirm-email",
     "HttpMethod": "POST",
