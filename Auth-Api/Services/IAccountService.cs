@@ -185,9 +185,29 @@ namespace Auth_Api.Services
             }
 
             await _userManager.SetTwoFactorEnabledAsync(user, true);
-            _logger.LogInformation("2FA enabled successfully for user ID: {UserId}", user.Id);
+            _logger.LogInformation("2FA enabled successfully for user ID: {UserId}", user.Id); 
+
+            await RemoveActiveRefreshTokensAsync(userId);
 
             return Result.Success();
+        }
+
+
+        private async Task RemoveActiveRefreshTokensAsync(string userId)
+        {
+            _logger.LogInformation("Revoking active refresh tokens After 2FA enabled for user ID: {UserId}", userId);
+
+            var refreshToken = await _context.RefreshTokens.Where(
+                x => x.UserId == userId
+                && x.RevokedOn == null
+                && x.ExpiresOn > DateTime.UtcNow
+                ).ToListAsync();
+            if (refreshToken == null) return;
+
+            _context.RefreshTokens.RemoveRange(refreshToken);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Active refresh tokens revoked for user ID: {UserId}", userId);
         }
 
     }
