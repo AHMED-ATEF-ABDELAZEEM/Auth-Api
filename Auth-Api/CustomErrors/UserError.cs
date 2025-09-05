@@ -37,5 +37,10 @@ namespace Auth_Api.CustomErrors
             "TwoFactor.AlreadyEnabled",
             "Two-factor authentication is already enabled for your account."
         );
+
+        public static Error InvalidCode = new Error(
+            "TwoFactor.InvalidCode",
+            "The code you entered is invalid. Please try again."
+        );
     }
 }

@@ -22,6 +22,8 @@ namespace Auth_Api.Services
         Task<Result> SetPasswordAsync (string userId, SetPasswordRequest request);
 
         Task<Result<byte[]>> GenerateQrCodeAsync(string userId);
+
+        Task<Result> EnableTwoFactorAsync(string userId, string code);
     }
 
     public class AccountService : IAccountService
@@ -157,7 +159,36 @@ namespace Auth_Api.Services
 
             return Result.Success(qrCode.GetGraphic(5));
         }
+        public async Task<Result> EnableTwoFactorAsync(string userId, string code)
+        {
+            _logger.LogInformation("Starting Enable 2FA for user ID: {UserId}", userId);
 
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user.TwoFactorEnabled)
+            {
+                _logger.LogWarning("Enable 2FA failed: already enabled for user ID: {UserId}", user.Id);
+                return Result.Failure(TwoFactorError.AlreadyEnabled);
+            }
+
+            var cleanCode = code.Replace(" ", "").Replace("-", "");
+
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(
+                user,
+                _userManager.Options.Tokens.AuthenticatorTokenProvider,
+                cleanCode);
+
+            if (!isValid)
+            {
+                _logger.LogWarning("Enable 2FA failed: invalid code for user ID: {UserId}", user.Id);
+                return Result.Failure(TwoFactorError.InvalidCode);
+            }
+
+            await _userManager.SetTwoFactorEnabledAsync(user, true);
+            _logger.LogInformation("2FA enabled successfully for user ID: {UserId}", user.Id);
+
+            return Result.Success();
+        }
 
     }
 }

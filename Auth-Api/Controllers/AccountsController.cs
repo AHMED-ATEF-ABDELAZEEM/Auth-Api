@@ -67,5 +67,16 @@ namespace Auth_Api.Controllers
 
             return result.IsSuccess ? File(result.Value, "image/png") : BadRequest(result.Error);
         }
+
+        [HttpPost("2fa/enable")]
+        public async Task<IActionResult> Enable2Fa([FromBody] EnableTwoFactorRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _accountService.EnableTwoFactorAsync(userId, request.Code);
+
+            return result.IsSuccess ? Ok("2FA enabled successfully") : BadRequest(result.Error);
+        }
+
     }
 }
