@@ -7,6 +7,7 @@ using Auth_Api.Persistence;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using QRCoder;
 
 namespace Auth_Api.Services
 {
@@ -19,6 +20,8 @@ namespace Auth_Api.Services
         Task<Result> ChangePasswordAsync(string userId, ChangePasswordRequest request);
 
         Task<Result> SetPasswordAsync (string userId, SetPasswordRequest request);
+
+        Task<Result<byte[]>> GenerateQrCodeAsync(string userId);
     }
 
     public class AccountService : IAccountService
@@ -93,9 +96,6 @@ namespace Auth_Api.Services
 
         }
 
-
-
-
         public async Task<Result> SetPasswordAsync(string userId, SetPasswordRequest request)
         {
             _logger.LogInformation("Starting set password process for user ID: {UserId}", userId);
@@ -121,7 +121,43 @@ namespace Auth_Api.Services
             _logger.LogInformation("Password set successfully for user ID: {UserId}", userId);
             return Result.Success();
         }
-        
-    
+
+        public async Task<Result<byte[]>> GenerateQrCodeAsync(string userId)
+        {
+
+            _logger.LogInformation("Starting 2FA QR setup for user ID: {UserId}", userId);
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user!.TwoFactorEnabled)
+            {
+                _logger.LogWarning("2FA QR setup failed: Two-factor authentication already enabled for user ID: {UserId}", userId);
+                return Result.Failure<byte[]>(TwoFactorError.AlreadyEnabled);
+            }
+
+            var key = await _userManager.GetAuthenticatorKeyAsync(user);
+
+            if (string.IsNullOrEmpty(key))
+            {
+                await _userManager.ResetAuthenticatorKeyAsync(user);
+                key = await _userManager.GetAuthenticatorKeyAsync(user);
+            }
+
+            var unformattedKey = key.Replace(" ", "").Replace("-", "");
+            // TODO : Change issuer name at production by your app name
+            var issuer = "Auth App";
+            var email = user.Email;
+            var otpauthUri = $"otpauth://totp/{Uri.EscapeDataString(issuer)}:{Uri.EscapeDataString(email)}?secret={unformattedKey}&issuer={Uri.EscapeDataString(issuer)}&digits=6";
+
+            using var qrGenerator = new QRCodeGenerator();
+            var qrCodeData = qrGenerator.CreateQrCode(otpauthUri, QRCodeGenerator.ECCLevel.Q);
+            var qrCode = new PngByteQRCode(qrCodeData);
+
+            _logger.LogInformation("2FA QR setup completed for user ID: {UserId}", userId);
+
+            return Result.Success(qrCode.GetGraphic(5));
+        }
+
+
     }
 }

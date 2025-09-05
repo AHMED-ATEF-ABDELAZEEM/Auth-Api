@@ -187,6 +187,16 @@
   },
   {
     "ContainingType": "Auth_Api.Controllers.AccountsController",
+    "Method": "Get2FaQrCode",
+    "RelativePath": "me/2fa/setup",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AccountsController",
     "Method": "ChangePassword",
     "RelativePath": "me/change-password",
     "HttpMethod": "PUT",

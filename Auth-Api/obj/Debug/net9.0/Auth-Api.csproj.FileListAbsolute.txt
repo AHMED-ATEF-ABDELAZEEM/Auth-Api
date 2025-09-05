@@ -204,3 +204,4 @@ D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\tr-
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\zh-TW\Hangfire.Core.resources.dll
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\zh\Hangfire.Core.resources.dll
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\HangfireBasicAuthenticationFilter.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\QRCoder.dll

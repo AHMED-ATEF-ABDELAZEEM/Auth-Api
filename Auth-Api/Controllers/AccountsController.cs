@@ -3,6 +3,7 @@ using Auth_Api.Contracts.Account.Requests;
 using Auth_Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Identity.Client;
@@ -56,6 +57,15 @@ namespace Auth_Api.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _accountService.SetPasswordAsync(userId!, request);
             return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+        }
+
+        [HttpGet("2fa/setup")]
+        public async Task<IActionResult> Get2FaQrCode()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _accountService.GenerateQrCodeAsync(userId!);
+
+            return result.IsSuccess ? File(result.Value, "image/png") : BadRequest(result.Error);
         }
     }
 }

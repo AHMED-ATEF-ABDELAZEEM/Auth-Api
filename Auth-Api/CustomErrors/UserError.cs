@@ -30,4 +30,12 @@ namespace Auth_Api.CustomErrors
             "External authentication failed. Please try again."
         );
     }
+
+    public class TwoFactorError
+    {
+        public static Error AlreadyEnabled = new Error(
+            "TwoFactor.AlreadyEnabled",
+            "Two-factor authentication is already enabled for your account."
+        );
+    }
 }
