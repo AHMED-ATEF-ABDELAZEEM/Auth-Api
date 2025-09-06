@@ -102,8 +102,7 @@
               "RelativeToolTip": "Auth-Api\\Contracts\\Auth\\Validations\\TwoFactorLoginRequestValidator.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-06T10:18:25.078Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-06T10:18:25.078Z"
             },
             {
               "$type": "Document",
@@ -197,7 +196,7 @@
               "RelativeDocumentMoniker": "Auth-Api\\Services\\IAuthService.cs",
               "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Services\\IAuthService.cs*",
               "RelativeToolTip": "Auth-Api\\Services\\IAuthService.cs*",
-              "ViewState": "AgIAAMABAAAAAAAAAAAgwPEBAABRAAAAAAAAAA==",
+              "ViewState": "AgIAAOABAAAAAAAAAAAAAC0AAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-05T09:51:49.607Z",
               "EditorCaption": ""
@@ -212,8 +211,7 @@
               "RelativeToolTip": "Auth-Api\\Controllers\\AuthController.cs",
               "ViewState": "AgIAAGkAAAAAAAAAAAAIwHYAAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-05T09:51:53.763Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-05T09:51:53.763Z"
             },
             {
               "$type": "Document",

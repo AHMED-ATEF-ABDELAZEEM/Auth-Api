@@ -43,7 +43,7 @@ namespace Auth_Api.Services
 
         Task<Result> ResetPasswordAsync(ResetPasswordRequest request);
 
-        Task<Result<AuthResponse>> GoogleLoginAsync(HttpContext httpContext);
+        Task<Result<LoginResponse>> GoogleLoginAsync(HttpContext httpContext);
 
         Task RemoveExpiredRefreshTokensAsync();
     }
@@ -450,13 +450,13 @@ namespace Auth_Api.Services
         }
 
 
-        public async Task<Result<AuthResponse>> GoogleLoginAsync(HttpContext httpContext)
+        public async Task<Result<LoginResponse>> GoogleLoginAsync(HttpContext httpContext)
         {
             var result = await httpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
             if (!result.Succeeded)
             {
                 _logger.LogWarning("External authentication failed.");
-                return Result.Failure<AuthResponse>(ExternalAuthError.AuthenticationFailed);
+                return Result.Failure<LoginResponse>(ExternalAuthError.AuthenticationFailed);
             }
 
 
@@ -478,14 +478,31 @@ namespace Auth_Api.Services
                 }
                 else
                 {
-                    return Result.Failure<AuthResponse>(createResult.Error);
+                    return Result.Failure<LoginResponse>(createResult.Error);
                 }
 
             }
 
+            var loginResponse = new LoginResponse();
+
+
+            if (user.TwoFactorEnabled)
+            {
+                _logger.LogInformation("Two-Factor Authentication required. Generating temporary session for user : {email}", user.Email);
+                var sessionId = Guid.NewGuid().ToString();
+                await _temporarySessionStore.SetAsync(sessionId, user.Id, TimeSpan.FromMinutes(2));
+                loginResponse.RequiresTwoFactor = true;
+                loginResponse.SessionId = sessionId;
+                _logger.LogInformation("Temporary 2FA session stored successfully.");
+                return Result.Success(loginResponse);
+
+            }
             var authResponse = await GenerateAuthResponseAsync(user);
 
-            return Result.Success(authResponse);
+            loginResponse.AuthResponse = authResponse;
+
+
+            return Result.Success(loginResponse);
 
         }
 
