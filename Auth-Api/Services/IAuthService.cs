@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using static QRCoder.PayloadGenerator;
 
 namespace Auth_Api.Services
 {
@@ -469,39 +470,17 @@ namespace Auth_Api.Services
 
             if (user is null)
             {
+                var createResult = await CreateUserAsync(claims);
 
-                var name = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-                var givenName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
-                var familyName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
-
-                user = new ApplicationUser
+                if (createResult.IsSuccess)
                 {
-                    Email = email,
-                    UserName = email,
-                    FirstName = givenName!,
-                    LastName = familyName!,
-                    EmailConfirmed = true,
-                };
-
-                var addResult = await _userManager.CreateAsync(user);
-                if (addResult.Succeeded)
-                {
-                    _logger.LogInformation("Added User Successfully With Email : {email}", email);
-                    var roleResult = await _userManager.AddToRoleAsync(user, DefaultRoles.User);
-                    if (!roleResult.Succeeded)
-                    {
-                        _logger.LogWarning("Failed to assign role to Google user");
-                        var error = roleResult.Errors.First();
-                        return Result.Failure<AuthResponse>(new Error(error.Code, error.Description));
-                    }
-                    _logger.LogInformation("User Assign To Role Successfully");
+                    user = createResult.Value;
                 }
                 else
                 {
-                    _logger.LogWarning("External authentication failed: user creation failed.");
-                    var error = addResult.Errors.First();
-                    return Result.Failure<AuthResponse>(new Error(error.Code, error.Description));
+                    return Result.Failure<AuthResponse>(createResult.Error);
                 }
+
             }
 
             var authResponse = await GenerateAuthResponseAsync(user);
@@ -516,7 +495,7 @@ namespace Auth_Api.Services
             var refreshTokens = await _context.RefreshTokens.Where(r => r.ExpiresOn <= DateTime.UtcNow || r.RevokedOn != null).ToListAsync();
             _context.RefreshTokens.RemoveRange(refreshTokens);
             await _context.SaveChangesAsync();
-            _logger.LogInformation("Finished Removing expired refresh tokens");
+            _logger.LogInformation("Finished Removing expired refresh tokens");  
         }
 
         private static string GenerateRefreshToken()
@@ -608,6 +587,51 @@ namespace Auth_Api.Services
                 && r.RevokedOn == null
                 && r.ExpiresOn > DateTime.UtcNow)
                 .SingleOrDefaultAsync();
+        }
+
+        public async Task<Result<ApplicationUser>> CreateUserAsync (IEnumerable<Claim> claims)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
+                Email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
+                FirstName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value,
+                LastName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value,
+                EmailConfirmed = true
+            };
+
+            var addResult = await _userManager.CreateAsync(user);
+
+            if (!addResult.Succeeded)
+            {
+                _logger.LogWarning("External authentication failed: user creation failed.");
+
+                var errors = string.Join(", ", addResult.Errors.Select(e => e.Description));
+                return Result.Failure<ApplicationUser>(new Error("UserCreationFailed", errors));
+            }
+
+            _logger.LogInformation("Added User Successfully. Id: {UserId}, Email: {Email}", user.Id, user.Email);
+
+            var roleResult = await _userManager.AddToRoleAsync(user, DefaultRoles.User);
+
+            if (!roleResult.Succeeded)
+            {
+                _logger.LogWarning("Failed to assign role to user : {Email}", user.Email);
+
+                await _userManager.DeleteAsync(user);
+
+                _logger.LogInformation("Deleted User Successfully With Email : {email} Because Failed To Assign Role ", user.Email);
+
+                var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
+
+                return Result.Failure<ApplicationUser>(new Error("AssignRoleFailed", errors));
+            }
+
+            _logger.LogInformation("User Assign To Role Successfully");
+
+            _logger.LogInformation("User Registered Successfully With Email : {email}", user.Email);
+
+            return Result.Success(user);
         }
 
     }
