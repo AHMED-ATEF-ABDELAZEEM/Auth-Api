@@ -459,15 +459,12 @@ namespace Auth_Api.Services
                 return Result.Failure<LoginResponse>(ExternalAuthError.AuthenticationFailed);
             }
 
+            _logger.LogInformation(result.Principal.ToString());
 
             var claims = result.Principal!.Claims;
 
             var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-
-
-            var emailVerifiedClaim = claims.FirstOrDefault(c => c.Type == "email_verified")?.Value;
-
-            bool.TryParse(emailVerifiedClaim,out bool  emailVerified);
+            var emailVerified = claims.FirstOrDefault(c => c.Type == "email_verified")?.Value;
 
             if (email is null)
             {
@@ -475,7 +472,7 @@ namespace Auth_Api.Services
                 return Result.Failure<LoginResponse>(ExternalAuthError.UserEmailNotFound);
             }
 
-            if (!emailVerified)
+            if (emailVerified != "true")
             {
                 _logger.LogWarning("External authentication failed: user email not verified.");
                 return Result.Failure<LoginResponse>(ExternalAuthError.UserEmailNotVerified);

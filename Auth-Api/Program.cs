@@ -111,6 +111,12 @@ namespace Auth_Api
             {
                 options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
                 options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+
+                options.Scope.Add("openid");
+                options.Scope.Add("email");
+                options.Scope.Add("profile");
+
+                options.ClaimActions.MapJsonKey("email_verified", "email_verified", "bool");
             });
 
             // Rate Limiter

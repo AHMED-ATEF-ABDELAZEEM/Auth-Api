@@ -25,35 +25,4 @@ namespace Auth_Api.CustomErrors
 
         public static Error PasswordAlreadySet = new("User.PasswordAlreadySet","This account already has a password. Please use the change password option instead.");
     }
-
-    public static class ExternalAuthError
-    {
-        public static Error AuthenticationFailed = new Error(
-            "ExternalAuth.AuthenticationFailed",
-            "External authentication failed. Please try again."
-        );
-    }
-
-    public class TwoFactorError
-    {
-        public static Error AlreadyEnabled = new Error(
-            "TwoFactor.AlreadyEnabled",
-            "Two-factor authentication is already enabled for your account."
-        );
-
-        public static Error InvalidCode = new Error(
-            "TwoFactor.InvalidCode",
-            "The code you entered is invalid. Please try again."
-        );
-
-        public static Error InvalidSession = new Error(
-            "TwoFactor.InvalidSession",
-            "The 2FA session is invalid or expired."
-        );
-
-        public static Error AlreadyDisabled = new Error(
-            "TwoFactor.AlreadyDisabled",
-            "Two-factor authentication is already disabled for your account."
-        );
-    }
 }
