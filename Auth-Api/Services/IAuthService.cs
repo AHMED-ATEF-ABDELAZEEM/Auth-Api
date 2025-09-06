@@ -5,6 +5,7 @@ using Auth_Api.Contracts.Auth.Responses;
 using Auth_Api.CustomErrors;
 using Auth_Api.CustomResult;
 using Auth_Api.EmailSettings;
+using Auth_Api.Helpers;
 using Auth_Api.Models;
 using Auth_Api.Persistence;
 using Auth_Api.SeedingData;
@@ -45,7 +46,6 @@ namespace Auth_Api.Services
 
         Task<Result<LoginResponse>> GoogleLoginAsync(HttpContext httpContext);
 
-        Task RemoveExpiredRefreshTokensAsync();
     }
 
     public class AuthService : IAuthService
@@ -60,7 +60,9 @@ namespace Auth_Api.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEmailSender _emailSender;
         private readonly ITemporarySessionStore _temporarySessionStore;
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, AppDbContext context, ITemporarySessionStore temporarySessionStore)
+        private readonly IAuthServiceHelper _authServiceHelper;
+        private readonly IRefreshTokenHelper _refreshTokenHelper;
+        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, AppDbContext context, ITemporarySessionStore temporarySessionStore, IAuthServiceHelper authServiceHelper, IRefreshTokenHelper refreshTokenHelper)
         {
             _userManager = userManager;
             _jwtProvider = jwtProvider;
@@ -70,6 +72,8 @@ namespace Auth_Api.Services
             _signInManager = signInManager;
             _context = context;
             _temporarySessionStore = temporarySessionStore;
+            _authServiceHelper = authServiceHelper;
+            _refreshTokenHelper = refreshTokenHelper;
         }
 
         public async Task<Result<LoginResponse>> LoginAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -126,7 +130,7 @@ namespace Auth_Api.Services
                 return Result.Failure<LoginResponse>(UserError.InvalidCredentials);
             }
 
-            var authResponse = await GenerateAuthResponseAsync(user);
+            var authResponse = await _authServiceHelper.GenerateAuthResponseAsync(user);
 
             loginResponse.AuthResponse = authResponse;
 
@@ -168,7 +172,7 @@ namespace Auth_Api.Services
                 return Result.Failure<AuthResponse>(TwoFactorError.InvalidCode);
             }
 
-            var authResponse = await GenerateAuthResponseAsync(user);
+            var authResponse = await _authServiceHelper.GenerateAuthResponseAsync(user);
 
             await _temporarySessionStore.RemoveAsync(sessionId);
             _logger.LogInformation("Remove session for User : {Email}", user.Email);
@@ -202,7 +206,7 @@ namespace Auth_Api.Services
                 return Result.Failure<AuthResponse>(UserError.LockedOut);
             }
 
-            var userRefreshToken = await GetActiveRefreshTokenAsync(userId, refreshToken);
+            var userRefreshToken = await _refreshTokenHelper.GetActiveRefreshTokenAsync(userId, refreshToken);
             if (userRefreshToken is null)
             {
                 _logger.LogWarning("Invalid or inactive refresh token for UserId {UserId}", user.Id);
@@ -214,7 +218,7 @@ namespace Auth_Api.Services
             _logger.LogInformation("Revoked old refresh token for UserId {UserId}", user.Id);
 
             
-            var authResponse = await GenerateAuthResponseAsync(user);
+            var authResponse = await _authServiceHelper.GenerateAuthResponseAsync(user);
 
             _logger.LogInformation("Refresh token process completed successfully for UserId {UserId}", user.Id);
 
@@ -242,7 +246,7 @@ namespace Auth_Api.Services
             }
 
 
-            var userRefreshToken = await GetActiveRefreshTokenAsync(userId, refreshToken);
+            var userRefreshToken = await _refreshTokenHelper.GetActiveRefreshTokenAsync(userId, refreshToken);
             if (userRefreshToken is null)
             {
                 _logger.LogWarning("Invalid or inactive refresh token for UserId {UserId}", user.Id);
@@ -294,7 +298,7 @@ namespace Auth_Api.Services
                 _logger.LogInformation("Confirmation Email: {code}", code);
                 _logger.LogInformation("User Id: {userId}", user.Id);
                 _logger.LogInformation("Registration Successfully for Email : {email}", user.Email);
-                await SendConfirmationEmail(user, code);
+                await _authServiceHelper.SendConfirmationEmail(user, code);
                 return Result.Success();
             }
 
@@ -369,7 +373,7 @@ namespace Auth_Api.Services
             // You Should send this code to the user via email for confirmation And Remove this line in production
             _logger.LogInformation("confirmation code : {code}", code);
             _logger.LogInformation("User Id : {Id}", user.Id);
-            await SendConfirmationEmail(user, code);
+            await _authServiceHelper.SendConfirmationEmail(user, code);
             return Result.Success();
         }
 
@@ -399,7 +403,7 @@ namespace Auth_Api.Services
             // You Should send this code to the user via email for confirmation And Remove this line in production
             _logger.LogInformation("Reset password code : {code}", code);
 
-            await SendResetPasswordEmail(user, code);
+            await _authServiceHelper.SendResetPasswordEmail(user, code);
 
             _logger.LogInformation("Send Reset password Email successfully for email: {Email}", email);
 
@@ -487,7 +491,7 @@ namespace Auth_Api.Services
 
             if (user is null)
             {
-                var createResult = await CreateUserAsync(claims);
+                var createResult = await _authServiceHelper.CreateUserAsync(claims);
 
                 if (createResult.IsSuccess)
                 {
@@ -514,7 +518,7 @@ namespace Auth_Api.Services
                 return Result.Success(loginResponse);
 
             }
-            var authResponse = await GenerateAuthResponseAsync(user);
+            var authResponse = await _authServiceHelper.GenerateAuthResponseAsync(user);
 
             loginResponse.AuthResponse = authResponse;
 
@@ -523,150 +527,7 @@ namespace Auth_Api.Services
 
         }
 
-        public async Task RemoveExpiredRefreshTokensAsync()
-        {
-            _logger.LogInformation("Start Removing expired refresh tokens");
-            var refreshTokens = await _context.RefreshTokens.Where(r => r.ExpiresOn <= DateTime.UtcNow || r.RevokedOn != null).ToListAsync();
-            _context.RefreshTokens.RemoveRange(refreshTokens);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Finished Removing expired refresh tokens");  
-        }
 
-        private static string GenerateRefreshToken()
-        {
-
-            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-        }
-        
-        private async Task SendConfirmationEmail(ApplicationUser user, string code)
-        {
-            var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin;
-            var emailBody = EmailBodyBuilder.GenerateEmailBody("EmailConfirmation",
-                new Dictionary<string, string>()
-                {
-                    { "{{name}}",user.FirstName },
-                    {"{{action_url}}", $"{origin}/auth/confirm-email?userId={user.Id}&code={code}"}
-                });
-
-            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(user.Email!, "Survey Basket : Confirm your email", emailBody));
-
-            await Task.CompletedTask;
-        }
-
-        private async Task <AuthResponse> GenerateAuthResponseAsync(ApplicationUser user)
-        {
-            _logger.LogInformation("Starting Generate Token For Email : {email}", user.Email);
-
-            var userRoles = await _userManager.GetRolesAsync(user);          
-            
-            var tokenInformation = _jwtProvider.GenerateToken(user, userRoles);
-            _logger.LogInformation("JWT token generated For Email : {email}", user.Email);
-
-            
-            var refreshToken = GenerateRefreshToken();
-            var refreshTokenExpirationDate = DateTime.UtcNow.AddDays(_RefreshTokenExpiryDays);
-
-            
-           var refreshTokenEntity = new RefreshToken
-            {
-                Token = refreshToken,
-                CreatedOn = DateTime.UtcNow,
-                ExpiresOn = refreshTokenExpirationDate,
-                UserId = user.Id
-            };
-           await _context.RefreshTokens.AddAsync(refreshTokenEntity);
-           await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Refresh token stored in database for user {Email}", user.Email);
-
-            var authResponse = new AuthResponse
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email!,
-                Token = tokenInformation.Token,
-                ExpireIn = tokenInformation.ExpiresIn * 60,
-                RefreshToken = refreshToken,
-                RefreshTokenExpiration = refreshTokenExpirationDate
-            };
-
-            _logger.LogInformation("Generate Response successful for user {Email}", user.Email);
-
-            return authResponse;
-        }
-
-        private async Task SendResetPasswordEmail(ApplicationUser user, string code)
-        {
-            var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin;
-            var emailBody = EmailBodyBuilder.GenerateEmailBody("ForgetPassword",
-                new Dictionary<string, string>()
-                {
-                    { "{{name}}",user.FirstName },
-                    {"{{action_url}}", $"{origin}/auth/forgot-password?email={user.Email}&code={code}"}
-                });
-
-            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(user.Email!, "Survey Basket : Reset password", emailBody));
-           
-            _logger.LogInformation("Reset password email sent to {Email}", user.Email);
-
-            await Task.CompletedTask;
-        }
-
-        private async Task<RefreshToken?> GetActiveRefreshTokenAsync (string userId, string refreshToken)
-        {
-            return await _context.RefreshTokens
-                .Where(r => r.UserId == userId 
-                && r.Token == refreshToken 
-                && r.RevokedOn == null
-                && r.ExpiresOn > DateTime.UtcNow)
-                .SingleOrDefaultAsync();
-        }
-
-        public async Task<Result<ApplicationUser>> CreateUserAsync (IEnumerable<Claim> claims)
-        {
-            var user = new ApplicationUser
-            {
-                UserName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
-                Email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
-                FirstName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value,
-                LastName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value,
-                EmailConfirmed = true
-            };
-
-            var addResult = await _userManager.CreateAsync(user);
-
-            if (!addResult.Succeeded)
-            {
-                _logger.LogWarning("External authentication failed: user creation failed.");
-
-                var errors = string.Join(", ", addResult.Errors.Select(e => e.Description));
-                return Result.Failure<ApplicationUser>(new Error("UserCreationFailed", errors));
-            }
-
-            _logger.LogInformation("Added User Successfully. Id: {UserId}, Email: {Email}", user.Id, user.Email);
-
-            var roleResult = await _userManager.AddToRoleAsync(user, DefaultRoles.User);
-
-            if (!roleResult.Succeeded)
-            {
-                _logger.LogWarning("Failed to assign role to user : {Email}", user.Email);
-
-                await _userManager.DeleteAsync(user);
-
-                _logger.LogInformation("Deleted User Successfully With Email : {email} Because Failed To Assign Role ", user.Email);
-
-                var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
-
-                return Result.Failure<ApplicationUser>(new Error("AssignRoleFailed", errors));
-            }
-
-            _logger.LogInformation("User Assign To Role Successfully");
-
-            _logger.LogInformation("User Registered Successfully With Email : {email}", user.Email);
-
-            return Result.Success(user);
-        }
 
     }
 }

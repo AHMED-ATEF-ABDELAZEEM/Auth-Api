@@ -2,6 +2,7 @@
 using Auth_Api.Contracts.Account.Responses;
 using Auth_Api.CustomErrors;
 using Auth_Api.CustomResult;
+using Auth_Api.Helpers;
 using Auth_Api.Models;
 using Auth_Api.Persistence;
 using Mapster;
@@ -35,12 +36,14 @@ namespace Auth_Api.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AppDbContext _context;
         private readonly ILogger<AccountService> _logger;
+        private readonly IRefreshTokenHelper _refreshTokenHelper;
 
-        public AccountService(AppDbContext context, UserManager<ApplicationUser> userManager, ILogger<AccountService> logger)
+        public AccountService(AppDbContext context, UserManager<ApplicationUser> userManager, ILogger<AccountService> logger, IRefreshTokenHelper refreshTokenHelper)
         {
             _userManager = userManager;
             _context = context;
             _logger = logger;
+            _refreshTokenHelper = refreshTokenHelper;
         }
 
 
@@ -187,9 +190,9 @@ namespace Auth_Api.Services
             }
 
             await _userManager.SetTwoFactorEnabledAsync(user, true);
-            _logger.LogInformation("2FA enabled successfully for user ID: {UserId}", user.Id); 
+            _logger.LogInformation("2FA enabled successfully for user ID: {UserId}", user.Id);
 
-            await RemoveActiveRefreshTokensAsync(userId);
+            await _refreshTokenHelper.RemoveActiveRefreshTokensAsync(userId);
 
             return Result.Success();
         }
@@ -224,7 +227,7 @@ namespace Auth_Api.Services
 
             _logger.LogInformation("Start Removing active refresh tokens After 2FA disabled for user: {email}", user.Email);
 
-            await RemoveActiveRefreshTokensAsync(userId);
+            await _refreshTokenHelper.RemoveActiveRefreshTokensAsync(userId);
 
 
             _logger.LogInformation("2FA disabled successfully for user: {Email}", user.Email);
@@ -233,19 +236,6 @@ namespace Auth_Api.Services
             return Result.Success();
         }
 
-        private async Task RemoveActiveRefreshTokensAsync(string userId)
-        {           
-            var refreshToken = await _context.RefreshTokens.Where(
-                x => x.UserId == userId
-                && x.RevokedOn == null
-                && x.ExpiresOn > DateTime.UtcNow
-                ).ToListAsync();
-            if (refreshToken.Count == 0) return;
-
-            _context.RefreshTokens.RemoveRange(refreshToken);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Finished Removing active refresh tokens for user Id : {userId}", userId);
-        }
 
     }
 }
