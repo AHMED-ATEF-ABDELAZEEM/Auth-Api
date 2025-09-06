@@ -1,4 +1,7 @@
 ﻿using Auth_Api.CustomResult;
+using Azure;
+using System.ComponentModel;
+using System.Runtime.Intrinsics.X86;
 
 namespace Auth_Api.CustomErrors
 {
@@ -46,6 +49,11 @@ namespace Auth_Api.CustomErrors
         public static Error InvalidSession = new Error(
             "TwoFactor.InvalidSession",
             "The 2FA session is invalid or expired."
+        );
+
+        public static Error AlreadyDisabled = new Error(
+            "TwoFactor.AlreadyDisabled",
+            "Two-factor authentication is already disabled for your account."
         );
     }
 }

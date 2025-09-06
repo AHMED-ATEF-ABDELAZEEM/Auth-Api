@@ -3,32 +3,36 @@
   "WorkspaceRootPath": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\controllers\\accountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\controllers\\accountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\services\\iaccountservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\services\\iaccountservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\contracts\\account\\requests\\updateprofilerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\contracts\\account\\requests\\updateprofilerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\contracts\\auth\\responses\\authresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\contracts\\auth\\responses\\authresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\contracts\\auth\\validations\\confirmemailrequestvalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\contracts\\auth\\validations\\confirmemailrequestvalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\contracts\\auth\\responses\\authresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\contracts\\auth\\responses\\authresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\contracts\\account\\requests\\updateprofilerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\contracts\\account\\requests\\updateprofilerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\customerrors\\usererror.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\customerrors\\usererror.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|solutionrelative:auth-api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5653FDF7-4B18-4BB3-9A23-20D5A3F3CE0C}|Auth-Api\\Auth-Api.csproj|d:\\programming\\back end\\learnapi\\projects\\auth-api\\auth-api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -51,27 +55,41 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "AccountsController.cs",
+              "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Controllers\\AccountsController.cs",
+              "RelativeDocumentMoniker": "Auth-Api\\Controllers\\AccountsController.cs",
+              "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Controllers\\AccountsController.cs",
+              "RelativeToolTip": "Auth-Api\\Controllers\\AccountsController.cs",
+              "ViewState": "AgIAAEkAAAAAAAAAAAAkwFAAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-05T13:20:09.718Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "IAccountService.cs",
               "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Services\\IAccountService.cs",
               "RelativeDocumentMoniker": "Auth-Api\\Services\\IAccountService.cs",
-              "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Services\\IAccountService.cs*",
-              "RelativeToolTip": "Auth-Api\\Services\\IAccountService.cs*",
-              "ViewState": "AgIAACgAAAAAAAAAAADwv9QAAAAFAAAAAAAAAA==",
+              "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Services\\IAccountService.cs",
+              "RelativeToolTip": "Auth-Api\\Services\\IAccountService.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAiwBsAAABHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-05T12:56:18.929Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "ConfirmEmailRequestValidator.cs",
               "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Contracts\\Auth\\Validations\\ConfirmEmailRequestValidator.cs",
               "RelativeDocumentMoniker": "Auth-Api\\Contracts\\Auth\\Validations\\ConfirmEmailRequestValidator.cs",
               "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Contracts\\Auth\\Validations\\ConfirmEmailRequestValidator.cs",
               "RelativeToolTip": "Auth-Api\\Contracts\\Auth\\Validations\\ConfirmEmailRequestValidator.cs",
-              "ViewState": "AgIAABEAAAAAAAAAAAAuwBIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAkwBIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-05T11:59:05.884Z"
+              "WhenOpened": "2025-09-05T11:59:05.884Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -81,13 +99,14 @@
               "RelativeDocumentMoniker": "Auth-Api\\Contracts\\Auth\\Responses\\AuthResponse.cs",
               "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Contracts\\Auth\\Responses\\AuthResponse.cs",
               "RelativeToolTip": "Auth-Api\\Contracts\\Auth\\Responses\\AuthResponse.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAA/wA0AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-05T09:46:55.624Z"
+              "WhenOpened": "2025-09-05T09:46:55.624Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "UpdateProfileRequest.cs",
               "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Contracts\\Account\\Requests\\UpdateProfileRequest.cs",
               "RelativeDocumentMoniker": "Auth-Api\\Contracts\\Account\\Requests\\UpdateProfileRequest.cs",
@@ -106,26 +125,27 @@
               "RelativeDocumentMoniker": "Auth-Api\\CustomErrors\\UserError.cs",
               "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\CustomErrors\\UserError.cs",
               "RelativeToolTip": "Auth-Api\\CustomErrors\\UserError.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAYwDEAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAACkAAAAAAAAAAAAgwDgAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-05T08:45:45.607Z"
+              "WhenOpened": "2025-09-05T08:45:45.607Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
               "Title": "IAuthService.cs",
               "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Services\\IAuthService.cs",
               "RelativeDocumentMoniker": "Auth-Api\\Services\\IAuthService.cs",
               "ToolTip": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Services\\IAuthService.cs",
               "RelativeToolTip": "Auth-Api\\Services\\IAuthService.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAABcAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-05T09:51:49.607Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "AuthController.cs",
               "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "Auth-Api\\Controllers\\AuthController.cs",
@@ -137,7 +157,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Persistence\\AppDbContext.cs",
               "RelativeDocumentMoniker": "Auth-Api\\Persistence\\AppDbContext.cs",
@@ -149,7 +169,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Programming\\Back End\\LearnAPI\\Projects\\Auth-Api\\Auth-Api\\Program.cs",
               "RelativeDocumentMoniker": "Auth-Api\\Program.cs",

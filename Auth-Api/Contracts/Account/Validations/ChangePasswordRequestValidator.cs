@@ -23,15 +23,4 @@ namespace Auth_Api.Contracts.Account.Validations
                 .WithMessage("New password must be different from the current password.");
         }
     }
-
-    public class EnableTwoFactorRequestValidator : AbstractValidator<EnableTwoFactorRequest>
-    {
-        public EnableTwoFactorRequestValidator()
-        {
-            RuleFor(x => x.Code)
-                .NotEmpty()
-                .NotNull()
-                .Length(6);
-        }
-    }
 }

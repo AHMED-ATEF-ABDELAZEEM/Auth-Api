@@ -203,6 +203,22 @@
   },
   {
     "ContainingType": "Auth_Api.Controllers.AccountsController",
+    "Method": "Disable2Fa",
+    "RelativePath": "me/2fa/disable",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Auth_Api.Contracts.Account.Requests.DisableTwoFactorRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AccountsController",
     "Method": "Enable2Fa",
     "RelativePath": "me/2fa/enable",
     "HttpMethod": "POST",

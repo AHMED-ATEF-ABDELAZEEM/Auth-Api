@@ -78,5 +78,15 @@ namespace Auth_Api.Controllers
             return result.IsSuccess ? Ok("2FA enabled successfully") : BadRequest(result.Error);
         }
 
+        [HttpPost("2fa/disable")]
+        public async Task<IActionResult> Disable2Fa([FromBody] DisableTwoFactorRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _accountService.DisableTwoFactorAsync(userId, request.Code);
+
+            return result.IsSuccess ? Ok("2FA disabled successfully") : BadRequest(result.Error);
+        }
+
     }
 }

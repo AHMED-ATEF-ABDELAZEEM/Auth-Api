@@ -24,6 +24,8 @@ namespace Auth_Api.Services
         Task<Result<byte[]>> GenerateQrCodeAsync(string userId);
 
         Task<Result> EnableTwoFactorAsync(string userId, string code);
+
+        Task<Result> DisableTwoFactorAsync(string userId, string code);
     }
 
     public class AccountService : IAccountService
@@ -192,22 +194,57 @@ namespace Auth_Api.Services
             return Result.Success();
         }
 
+        public async Task<Result> DisableTwoFactorAsync(string userId, string code)
+        {
+            var user = await _context.Users.FindAsync(userId);
+
+            if (!user!.TwoFactorEnabled)
+            {
+                _logger.LogWarning("2FA already disabled for user ID: {UserId}", userId);
+                return Result.Failure(TwoFactorError.AlreadyDisabled);
+            }
+
+            var cleanCode = code.Replace(" ", "").Replace("-", "");
+
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(
+                user,
+                _userManager.Options.Tokens.AuthenticatorTokenProvider,
+                cleanCode);
+
+            if (!isValid)
+            {
+                _logger.LogWarning("Disable 2FA failed: invalid code for user ID: {UserId}", user.Id);
+                return Result.Failure(TwoFactorError.InvalidCode);
+            }
+
+            await _userManager.SetTwoFactorEnabledAsync(user, false);
+
+            await _userManager.ResetAuthenticatorKeyAsync(user);
+
+
+            _logger.LogInformation("Start Removing active refresh tokens After 2FA disabled for user: {email}", user.Email);
+
+            await RemoveActiveRefreshTokensAsync(userId);
+
+
+            _logger.LogInformation("2FA disabled successfully for user: {Email}", user.Email);
+
+
+            return Result.Success();
+        }
 
         private async Task RemoveActiveRefreshTokensAsync(string userId)
-        {
-            _logger.LogInformation("Revoking active refresh tokens After 2FA enabled for user ID: {UserId}", userId);
-
+        {           
             var refreshToken = await _context.RefreshTokens.Where(
                 x => x.UserId == userId
                 && x.RevokedOn == null
                 && x.ExpiresOn > DateTime.UtcNow
                 ).ToListAsync();
-            if (refreshToken == null) return;
+            if (refreshToken.Count == 0) return;
 
             _context.RefreshTokens.RemoveRange(refreshToken);
             await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Active refresh tokens revoked for user ID: {UserId}", userId);
+            _logger.LogInformation("Finished Removing active refresh tokens for user Id : {userId}", userId);
         }
 
     }
