@@ -25,6 +25,8 @@ namespace Auth_Api.Helpers
         Task SendResetPasswordEmail(ApplicationUser user, string code);
         Task<AuthResponse> GenerateAuthResponseAsync(ApplicationUser user);
         Task<Result<ApplicationUser>> CreateUserAsync(IEnumerable<Claim> claims);
+
+        Task<Result<ApplicationUser>> CreateUserCoreAsync(ApplicationUser user, string? password = null);
     }
 
     public class AuthServiceHelper : IAuthServiceHelper
@@ -129,8 +131,6 @@ namespace Auth_Api.Helpers
         public async Task<Result<ApplicationUser>> CreateUserAsync(IEnumerable<Claim> claims)
         {
 
-            _logger.LogInformation("Starting Creating User");
-
             var user = new ApplicationUser
             {
                 UserName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
@@ -140,10 +140,20 @@ namespace Auth_Api.Helpers
                 EmailConfirmed = true
             };
 
+            return await CreateUserCoreAsync(user);
+
+        }
+
+        public async Task<Result<ApplicationUser>> CreateUserCoreAsync(ApplicationUser user, string? password = null)
+        {
+            _logger.LogInformation("Starting Creating User : {Email}", user.Email);
+
             await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                var addResult = await _userManager.CreateAsync(user);
+                IdentityResult addResult = new IdentityResult();
+                if (password != null) addResult = await _userManager.CreateAsync(user, password);
+                else addResult = await _userManager.CreateAsync(user);
 
                 if (!addResult.Succeeded)
                 {
@@ -159,7 +169,7 @@ namespace Auth_Api.Helpers
                 var roleResult = await _userManager.AddToRoleAsync(user, DefaultRoles.User);
 
                 if (!roleResult.Succeeded)
-                {                   
+                {
                     var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
                     _logger.LogError("Error Assigning role to user: {ErrorMessage}", errors);
                     await transaction.RollbackAsync();
@@ -173,13 +183,12 @@ namespace Auth_Api.Helpers
                 return Result.Success(user);
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("Error creating user: {ErrorMessage}", ex.Message);
                 await transaction.RollbackAsync();
                 return Result.Failure<ApplicationUser>(UserError.RegisterFailed);
             }
-
         }
     }
 

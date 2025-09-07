@@ -276,35 +276,25 @@ namespace Auth_Api.Services
 
             var user = request.Adapt<ApplicationUser>();
 
-            var result = await _userManager.CreateAsync(user, request.Password);
+            var result = await _authServiceHelper.CreateUserCoreAsync(user, request.Password);
 
-            if (result.Succeeded)
+            if (result.IsSuccess)
             {
-                var roleResult = await _userManager.AddToRoleAsync(user,DefaultRoles.User);
-
-                if (!roleResult.Succeeded)
-                {
-                    _logger.LogWarning("Registration failed for email: {Email}. Errors: {Errors}", request.Email, string.Join(", ", roleResult.Errors.Select(e => e.Description)));
-                    var roleError = roleResult.Errors.First();
-                    return Result.Failure(new Error(roleError.Code, roleError.Description));
-                }
-
-                _logger.LogInformation("User Assign To Role Successfully");
-
+                user = result.Value;
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 // TODO
                 // You Should  send this code to the user via email for confirmation And Remove This Logging Before Production
-                _logger.LogInformation("Confirmation Email: {code}", code);
-                _logger.LogInformation("User Id: {userId}", user.Id);
+                _logger.LogDebug("Confirmation Email: {code}", code);
+                _logger.LogDebug("User Id: {userId}", user.Id);
                 _logger.LogInformation("Registration Successfully for Email : {email}", user.Email);
                 await _authServiceHelper.SendConfirmationEmail(user, code);
                 return Result.Success();
             }
 
-            _logger.LogWarning("Registration failed for email: {Email}. Errors: {Errors}", request.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
-            var error = result.Errors.First();
-            return Result.Failure(new Error(error.Code, error.Description));
+            _logger.LogWarning("Registration failed for email: {Email}",user.Email);
+            var error = result.Error;
+            return Result.Failure(error);
 
         }
 
