@@ -1,6 +1,7 @@
 ﻿using Auth_Api.Authentication;
 using Auth_Api.Cache;
 using Auth_Api.Contracts.Auth.Responses;
+using Auth_Api.CustomErrors;
 using Auth_Api.CustomResult;
 using Auth_Api.EmailSettings;
 using Auth_Api.Models;
@@ -125,9 +126,11 @@ namespace Auth_Api.Helpers
             await Task.CompletedTask;
         }
 
-
         public async Task<Result<ApplicationUser>> CreateUserAsync(IEnumerable<Claim> claims)
         {
+
+            _logger.LogInformation("Starting Creating User");
+
             var user = new ApplicationUser
             {
                 UserName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
@@ -137,33 +140,46 @@ namespace Auth_Api.Helpers
                 EmailConfirmed = true
             };
 
-            var addResult = await _userManager.CreateAsync(user);
-
-            if (!addResult.Succeeded)
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                _logger.LogWarning("External authentication failed: user creation failed.");
-                var errors = string.Join(", ", addResult.Errors.Select(e => e.Description));
-                return Result.Failure<ApplicationUser>(new Error("UserCreationFailed", errors));
+                var addResult = await _userManager.CreateAsync(user);
+
+                if (!addResult.Succeeded)
+                {
+                    var errors = string.Join(", ", addResult.Errors.Select(e => e.Description));
+                    _logger.LogError("Error creating user: {ErrorMessage}", errors);
+
+                    return Result.Failure<ApplicationUser>(UserError.RegisterFailed);
+
+                }
+
+                _logger.LogInformation("Added User Successfully. Id: {UserId}, Email: {Email}", user.Id, user.Email);
+
+                var roleResult = await _userManager.AddToRoleAsync(user, DefaultRoles.User);
+
+                if (!roleResult.Succeeded)
+                {                   
+                    var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
+                    _logger.LogError("Error Assigning role to user: {ErrorMessage}", errors);
+                    await transaction.RollbackAsync();
+                    return Result.Failure<ApplicationUser>(UserError.RegisterFailed);
+                }
+
+                _logger.LogInformation("User Registered Successfully With Email : {email}", user.Email);
+
+                await transaction.CommitAsync();
+
+                return Result.Success(user);
+
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("Error creating user: {ErrorMessage}", ex.Message);
+                await transaction.RollbackAsync();
+                return Result.Failure<ApplicationUser>(UserError.RegisterFailed);
             }
 
-            _logger.LogInformation("Added User Successfully. Id: {UserId}, Email: {Email}", user.Id, user.Email);
-
-            var roleResult = await _userManager.AddToRoleAsync(user, DefaultRoles.User);
-
-            if (!roleResult.Succeeded)
-            {
-                _logger.LogWarning("Failed to assign role to user : {Email}", user.Email);
-                await _userManager.DeleteAsync(user);
-                _logger.LogInformation("Deleted User Successfully With Email : {email} Because Failed To Assign Role ", user.Email);
-
-                var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
-                return Result.Failure<ApplicationUser>(new Error("AssignRoleFailed", errors));
-            }
-
-            _logger.LogInformation("User Assign To Role Successfully");
-            _logger.LogInformation("User Registered Successfully With Email : {email}", user.Email);
-
-            return Result.Success(user);
         }
     }
 

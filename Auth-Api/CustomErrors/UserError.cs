@@ -24,5 +24,7 @@ namespace Auth_Api.CustomErrors
         public static Error NoPasswordSet = new Error("User.NoPasswordSet","This account does not have a password. Please set a password before attempting to change it.");
 
         public static Error PasswordAlreadySet = new("User.PasswordAlreadySet","This account already has a password. Please use the change password option instead.");
+
+        public static Error RegisterFailed = new Error("User.RegisterFailed","Registration failed. Please try again later.");
     }
 }
