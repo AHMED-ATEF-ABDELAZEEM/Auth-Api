@@ -78,6 +78,7 @@ namespace Auth_Api
             builder.Services.AddScoped<ITemporarySessionStore, MemoryTemporarySessionStore>();
             builder.Services.AddScoped<IRefreshTokenHelper, RefreshTokenHelper>();
             builder.Services.AddScoped<IAuthServiceHelper, AuthServiceHelper>();
+            builder.Services.AddScoped<IImageProfileService, ImageProfileService>();
             builder.Services.AddTransient<AppDbSeeder>();
 
             builder.Services.AddMemoryCache();
@@ -230,6 +231,7 @@ namespace Auth_Api
             app.MapControllers();
 
             app.UseExceptionHandler();
+
 
             app.Run();
         }

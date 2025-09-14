@@ -205,3 +205,6 @@ D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\zh-
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\zh\Hangfire.Core.resources.dll
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\HangfireBasicAuthenticationFilter.dll
 D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\QRCoder.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\Auth-Api.staticwebassets.runtime.json
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\System.Formats.Asn1.dll
+D:\Programming\Back End\LearnAPI\Projects\Auth-Api\Auth-Api\bin\Debug\net9.0\System.Text.Json.dll

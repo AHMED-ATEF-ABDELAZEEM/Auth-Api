@@ -18,10 +18,12 @@ namespace Auth_Api.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly IImageProfileService _imageProfileService;
 
-        public AccountsController(IAccountService accountService)
+        public AccountsController(IAccountService accountService, IImageProfileService imageProfileService)
         {
             _accountService = accountService;
+            _imageProfileService = imageProfileService;
         }
 
 
@@ -86,6 +88,16 @@ namespace Auth_Api.Controllers
             var result = await _accountService.DisableTwoFactorAsync(userId, request.Code);
 
             return result.IsSuccess ? Ok("2FA disabled successfully") : BadRequest(result.Error);
+        }
+
+        [HttpPost("profile-image")]
+        public async Task<IActionResult> UploadProfileImage([FromForm] IFormFile Image,CancellationToken cancellationToken = default)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _imageProfileService.UploadProfileImageAsync(userId, Image, cancellationToken);
+
+            return result.IsSuccess ? Ok("Uploaded successfully") : BadRequest(result.Error);
         }
 
     }
