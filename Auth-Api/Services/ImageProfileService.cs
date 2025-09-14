@@ -10,6 +10,8 @@ namespace Auth_Api.Services
     public interface IImageProfileService
     {
         Task<Result> UploadProfileImageAsync(string userId, IFormFile Image, CancellationToken cancellationToken = default);
+
+        Task<Result> RemoveProfileImageAsync(string userId, CancellationToken cancellationToken = default);
     }
     public class ImageProfileService : IImageProfileService
     {
@@ -30,6 +32,32 @@ namespace Auth_Api.Services
             }
 
             _logger = logger;
+        }
+
+        public async Task<Result> RemoveProfileImageAsync(string userId, CancellationToken cancellationToken = default)
+        {
+             _logger.LogInformation("Starting Remove profile image for user ID: {UserId}", userId);
+
+            var user = await _context.Users.FindAsync(userId, cancellationToken);
+
+            if (user.ImageProfile is null)
+            {
+                _logger.LogWarning("Remove profile image failed: User has no profile image for user ID: {UserId}", userId);
+                return Result.Failure(ImageProfileError.NoProfileImage);
+            }
+
+            _logger.LogInformation("Remove Old Profile Image for user ID: {UserId}", userId);
+            var path = Path.Combine(_imagesPath, user.ImageProfile);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+            user.ImageProfile = null;
+            await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Remove profile image successfully for user ID: {UserId}", userId);
+            return Result.Success();
+
         }
 
         public async Task<Result> UploadProfileImageAsync(string userId, IFormFile Image, CancellationToken cancellationToken = default)

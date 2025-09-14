@@ -302,6 +302,16 @@
   },
   {
     "ContainingType": "Auth_Api.Controllers.AccountsController",
+    "Method": "DeleteProfileImage",
+    "RelativePath": "me/profile-image",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Auth_Api.Controllers.AccountsController",
     "Method": "SetPassword",
     "RelativePath": "me/set-password",
     "HttpMethod": "PUT",

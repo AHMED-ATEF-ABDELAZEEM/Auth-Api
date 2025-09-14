@@ -100,5 +100,15 @@ namespace Auth_Api.Controllers
             return result.IsSuccess ? Ok("Uploaded successfully") : BadRequest(result.Error);
         }
 
+        [HttpDelete("profile-image")]
+        public async Task<IActionResult> DeleteProfileImage(CancellationToken cancellationToken = default)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _imageProfileService.RemoveProfileImageAsync(userId, cancellationToken);
+
+            return result.IsSuccess ? Ok("Deleted successfully") : BadRequest(result.Error);
+        }
+
     }
 }

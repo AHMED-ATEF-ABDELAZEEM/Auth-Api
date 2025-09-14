@@ -9,5 +9,6 @@ namespace Auth_Api.CustomErrors
 
         public static Error InvalidExtension => new Error("Image.InvalidExtension", $"Invalid image extension,Only Extension Allowed are {String.Join(", ", ImageProfileSettings.AllowedExtensions)}");
 
+        public static Error NoProfileImage => new Error("Image.NoProfile","You do not have a profile image to remove.");
     }
 }
