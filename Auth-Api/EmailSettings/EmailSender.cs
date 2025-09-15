@@ -1,19 +1,18 @@
-﻿using Auth_Api.EmailSettings;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace Auth_Api.Services
+namespace Auth_Api.EmailSettings
 {
-    public class EmailService : IEmailSender
+    public class EmailSender : IEmailSender
     {
         private readonly MailSettings _emailSettings;
-        private readonly ILogger<EmailService> _logger;
+        private readonly ILogger<EmailSender> _logger;
 
-        public EmailService(IOptions<MailSettings> emailSettings, ILogger<EmailService> logger)
+        public EmailSender(IOptions<MailSettings> emailSettings, ILogger<EmailSender> logger)
         {
             _emailSettings = emailSettings.Value;
             _logger = logger;

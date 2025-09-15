@@ -73,7 +73,7 @@ namespace Auth_Api
 
             builder.Services.AddSingleton<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddScoped<IEmailSender, EmailService>();
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IPasswordService, PasswordService>();
@@ -87,6 +87,7 @@ namespace Auth_Api
             builder.Services.AddScoped<IRefreshTokenHelper, RefreshTokenHelper>();
             builder.Services.AddScoped<IAuthServiceHelper, AuthServiceHelper>();
             builder.Services.AddScoped<IUserCreationHelper, UserCreationHelper>();
+            builder.Services.AddScoped<IEmailHelper, EmailHelper>();
 
             builder.Services.AddTransient<AppDbSeeder>();
 

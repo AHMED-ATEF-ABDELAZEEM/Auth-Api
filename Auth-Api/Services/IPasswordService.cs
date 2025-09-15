@@ -25,16 +25,19 @@ namespace Auth_Api.Services
 
         private readonly ILogger<AuthService> _logger;
 
+        private readonly IEmailHelper _emailHelper;
+
         private readonly IAuthServiceHelper _authServiceHelper;
 
         public PasswordService(UserManager<ApplicationUser> userManager,
             ILogger<AuthService> logger,
-            IAuthServiceHelper authServiceHelper)
+            IAuthServiceHelper authServiceHelper,
+            IEmailHelper emailHelper)
         {
             _userManager = userManager;
             _logger = logger;
             _authServiceHelper = authServiceHelper;
-
+            _emailHelper = emailHelper;
         }
         public async Task<Result> SendResetPasswordEmailAsync(string email)
         {
@@ -62,7 +65,7 @@ namespace Auth_Api.Services
             // You Should send this code to the user via email for confirmation And Remove this line in production
             _logger.LogInformation("Reset password code : {code}", code);
 
-            await _authServiceHelper.SendResetPasswordEmail(user, code);
+            await _emailHelper.SendResetPasswordEmail(user, code);
 
             _logger.LogInformation("Send Reset password Email successfully for email: {Email}", email);
 

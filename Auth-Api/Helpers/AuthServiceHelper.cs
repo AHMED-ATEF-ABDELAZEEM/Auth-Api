@@ -20,8 +20,7 @@ namespace Auth_Api.Helpers
 
     public interface IAuthServiceHelper
     {
-        Task SendConfirmationEmail(ApplicationUser user, string code);
-        Task SendResetPasswordEmail(ApplicationUser user, string code);
+
         Task<AuthResponse> GenerateAuthResponseAsync(ApplicationUser user);
 
     }
@@ -56,21 +55,6 @@ namespace Auth_Api.Helpers
         }
 
 
-
-        public async Task SendConfirmationEmail(ApplicationUser user, string code)
-        {
-            var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin;
-            var emailBody = EmailBodyBuilder.GenerateEmailBody("EmailConfirmation",
-                new Dictionary<string, string>()
-                {
-                { "{{name}}",user.FirstName },
-                {"{{action_url}}", $"{origin}/auth/confirm-email?userId={user.Id}&code={code}"}
-                });
-
-            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(user.Email!, "Survey Basket : Confirm your email", emailBody));
-
-            await Task.CompletedTask;
-        }
 
         public async Task<AuthResponse> GenerateAuthResponseAsync(ApplicationUser user)
         {
@@ -108,22 +92,6 @@ namespace Auth_Api.Helpers
             };
         }
 
-        public async Task SendResetPasswordEmail(ApplicationUser user, string code)
-        {
-            var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin;
-            var emailBody = EmailBodyBuilder.GenerateEmailBody("ForgetPassword",
-                new Dictionary<string, string>()
-                {
-                { "{{name}}",user.FirstName },
-                {"{{action_url}}", $"{origin}/auth/forgot-password?email={user.Email}&code={code}"}
-                });
-
-            BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(user.Email!, "Survey Basket : Reset password", emailBody));
-
-            _logger.LogInformation("Reset password email sent to {Email}", user.Email);
-
-            await Task.CompletedTask;
-        }
 
 
     }

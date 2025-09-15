@@ -25,15 +25,18 @@ namespace Auth_Api.Services
         private readonly ILogger<RegistrationService> _logger;
         private readonly IAuthServiceHelper _authServiceHelper;
         private readonly IUserCreationHelper _userCreationHelper;
+        private readonly IEmailHelper _emailHelper;
         public RegistrationService(UserManager<ApplicationUser> userManager,
             ILogger<RegistrationService> logger,
             IAuthServiceHelper authServiceHelper,
-            IUserCreationHelper userCreationHelper)
+            IUserCreationHelper userCreationHelper,
+            IEmailHelper emailHelper)
         {
             _userManager = userManager;
             _logger = logger;
             _authServiceHelper = authServiceHelper;
             _userCreationHelper = userCreationHelper;
+            _emailHelper = emailHelper;
         }
         public async Task<Result> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
         {
@@ -61,7 +64,7 @@ namespace Auth_Api.Services
                 _logger.LogDebug("Confirmation Email: {code}", code);
                 _logger.LogDebug("User Id: {userId}", user.Id);
                 _logger.LogInformation("Registration Successfully for Email : {email}", user.Email);
-                await _authServiceHelper.SendConfirmationEmail(user, code);
+                await _emailHelper.SendConfirmationEmail(user, code);
                 return Result.Success();
             }
 
@@ -136,7 +139,7 @@ namespace Auth_Api.Services
             // You Should send this code to the user via email for confirmation And Remove this line in production
             _logger.LogInformation("confirmation code : {code}", code);
             _logger.LogInformation("User Id : {Id}", user.Id);
-            await _authServiceHelper.SendConfirmationEmail(user, code);
+            await _emailHelper.SendConfirmationEmail(user, code);
             return Result.Success();
         }
     }
