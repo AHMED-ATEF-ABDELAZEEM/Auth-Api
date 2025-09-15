@@ -19,11 +19,12 @@ namespace Auth_Api.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly IImageProfileService _imageProfileService;
-
-        public AccountsController(IAccountService accountService, IImageProfileService imageProfileService)
+        private readonly IPasswordService _passwordService;
+        public AccountsController(IAccountService accountService, IImageProfileService imageProfileService, IPasswordService passwordService)
         {
             _accountService = accountService;
             _imageProfileService = imageProfileService;
+            _passwordService = passwordService;
         }
 
 
@@ -47,7 +48,7 @@ namespace Auth_Api.Controllers
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _accountService.ChangePasswordAsync(userId!, request);
+            var result = await _passwordService.ChangePasswordAsync(userId!, request);
 
             return result.IsSuccess ? NoContent() : BadRequest(result.Error);
 
@@ -57,7 +58,7 @@ namespace Auth_Api.Controllers
         public async Task<IActionResult> SetPassword([FromBody] SetPasswordRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _accountService.SetPasswordAsync(userId!, request);
+            var result = await _passwordService.SetPasswordAsync(userId!, request);
             return result.IsSuccess ? NoContent() : BadRequest(result.Error);
         }
 

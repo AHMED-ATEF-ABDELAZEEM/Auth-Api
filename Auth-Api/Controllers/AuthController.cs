@@ -21,13 +21,15 @@ namespace Auth_Api.Controllers
     {
         private readonly IAuthService _authService;
         private readonly ITokenService _tokenService;
+        private readonly IPasswordService _passwordService;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AuthController(IAuthService authService, SignInManager<ApplicationUser> signInManager, ITokenService tokenService)
+        public AuthController(IAuthService authService, SignInManager<ApplicationUser> signInManager, ITokenService tokenService, IPasswordService passwordService)
         {
             _authService = authService;
             _signInManager = signInManager;
             _tokenService = tokenService;
+            _passwordService = passwordService;
         }
 
         [HttpPost("login")]
@@ -91,7 +93,7 @@ namespace Auth_Api.Controllers
         [HttpPost("forget-password")]
         public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordRequest request, CancellationToken cancellationToken)
         {
-            var result = await _authService.SendResetPasswordEmailAsync(request.Email);
+            var result = await _passwordService.SendResetPasswordEmailAsync(request.Email);
 
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
@@ -99,7 +101,7 @@ namespace Auth_Api.Controllers
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken cancellationToken)
         {
-            var result = await _authService.ResetPasswordAsync(request);
+            var result = await _passwordService.ResetPasswordAsync(request);
 
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }

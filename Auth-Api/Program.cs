@@ -76,6 +76,8 @@ namespace Auth_Api
             builder.Services.AddScoped<IEmailSender, EmailService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IPasswordService, PasswordService>();
+
             builder.Services.AddScoped<IImageProfileService, ImageProfileService>();
             
             builder.Services.AddScoped<ITemporarySessionStore, MemoryTemporarySessionStore>();

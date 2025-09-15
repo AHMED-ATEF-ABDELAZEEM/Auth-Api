@@ -1,5 +1,6 @@
 ﻿using Auth_Api.Authentication;
 using Auth_Api.Cache;
+using Auth_Api.Contracts.Account.Requests;
 using Auth_Api.Contracts.Auth.Requests;
 using Auth_Api.Contracts.Auth.Responses;
 using Auth_Api.CustomErrors;
@@ -7,14 +8,10 @@ using Auth_Api.CustomResult;
 using Auth_Api.EmailSettings;
 using Auth_Api.Helpers;
 using Auth_Api.Models;
-using Auth_Api.Persistence;
-using Auth_Api.SeedingData;
-using Hangfire;
 using Mapster;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -22,6 +19,9 @@ using System.Text;
 
 namespace Auth_Api.Services
 {
+
+
+
     public interface IAuthService
     {
         Task<Result<LoginResponse>> LoginAsync (string email,string password,CancellationToken cancellationToken = default);
@@ -34,9 +34,7 @@ namespace Auth_Api.Services
 
         Task<Result> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest request);
 
-        Task<Result> SendResetPasswordEmailAsync(string email);
 
-        Task<Result> ResetPasswordAsync(ResetPasswordRequest request);
 
         Task<Result<LoginResponse>> GoogleLoginAsync(HttpContext httpContext);
 
@@ -47,27 +45,20 @@ namespace Auth_Api.Services
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly AppDbContext _context;
-        private readonly IJwtProvider _jwtProvider;
-        private readonly int _RefreshTokenExpiryDays = 14;
         private readonly ILogger<AuthService> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IEmailSender _emailSender;
         private readonly ITemporarySessionStore _temporarySessionStore;
         private readonly IAuthServiceHelper _authServiceHelper;
-        private readonly IRefreshTokenHelper _refreshTokenHelper;
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, AppDbContext context, ITemporarySessionStore temporarySessionStore, IAuthServiceHelper authServiceHelper, IRefreshTokenHelper refreshTokenHelper)
+        public AuthService(UserManager<ApplicationUser> userManager,
+            ILogger<AuthService> logger,
+            SignInManager<ApplicationUser> signInManager,
+            ITemporarySessionStore temporarySessionStore,
+            IAuthServiceHelper authServiceHelper)
         {
             _userManager = userManager;
-            _jwtProvider = jwtProvider;
             _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
-            _emailSender = emailSender;
             _signInManager = signInManager;
-            _context = context;
             _temporarySessionStore = temporarySessionStore;
             _authServiceHelper = authServiceHelper;
-            _refreshTokenHelper = refreshTokenHelper;
         }
 
         public async Task<Result<LoginResponse>> LoginAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -279,82 +270,6 @@ namespace Auth_Api.Services
             _logger.LogInformation("User Id : {Id}", user.Id);
             await _authServiceHelper.SendConfirmationEmail(user, code);
             return Result.Success();
-        }
-
-        public async Task<Result> SendResetPasswordEmailAsync(string email)
-        {
-
-            _logger.LogInformation("starting process for send reset password email To {email}", email);
-
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user is null)
-            {
-                _logger.LogWarning("Send Reset password Email failed: user not found for email: {Email}", email);
-                //  For Security Reasons (Attack)
-                return Result.Success();
-            }
-
-            if (!user.EmailConfirmed)
-            {
-                _logger.LogWarning("Send Reset password Email failed: email not confirmed for email: {Email}", email);
-                return Result.Failure(UserError.EmailNotConfirmed);
-            }
-
-
-            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            // TODO
-            // You Should send this code to the user via email for confirmation And Remove this line in production
-            _logger.LogInformation("Reset password code : {code}", code);
-
-            await _authServiceHelper.SendResetPasswordEmail(user, code);
-
-            _logger.LogInformation("Send Reset password Email successfully for email: {Email}", email);
-
-            return Result.Success();
-        }
-
-        public async Task<Result> ResetPasswordAsync(ResetPasswordRequest request)
-        {
-
-            _logger.LogInformation("starting reset password process For email : {email}", request.Email);
-
-            var user = await _userManager.FindByEmailAsync(request.Email);
-
-            if (user is null)
-            {
-                _logger.LogWarning("reset password failed: user not found for email: {Email}", request.Email);
-                return Result.Failure(UserError.InvalidCode);
-            }
-
-            if (!user.EmailConfirmed)
-            {
-                _logger.LogWarning("reset password failed: email not confirmed for email: {Email}", request.Email);
-                return Result.Failure(UserError.EmailNotConfirmed);
-            }
-
-            var code = request.Code;
-            try
-            {
-                code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-            }
-            catch (FormatException)
-            {
-                _logger.LogWarning("reset password failed: invalid code format for email: {Email}", request.Email);
-                return Result.Failure(UserError.InvalidCode);
-            }
-
-
-            var result = await _userManager.ResetPasswordAsync(user, code, request.NewPassword);
-            if (result.Succeeded)
-            {
-                _logger.LogInformation("reset password successfully for email: {Email}", request.Email);
-                return Result.Success();
-            }
-
-            _logger.LogWarning("reset password failed for email: {Email}. Errors: {Errors}", request.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
-            var error = result.Errors.First();
-            return Result.Failure(new Error(error.Code, error.Description));
         }
 
 
