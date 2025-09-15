@@ -24,13 +24,16 @@ namespace Auth_Api.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegistrationService> _logger;
         private readonly IAuthServiceHelper _authServiceHelper;
+        private readonly IUserCreationHelper _userCreationHelper;
         public RegistrationService(UserManager<ApplicationUser> userManager,
             ILogger<RegistrationService> logger,
-            IAuthServiceHelper authServiceHelper)
+            IAuthServiceHelper authServiceHelper,
+            IUserCreationHelper userCreationHelper)
         {
             _userManager = userManager;
             _logger = logger;
             _authServiceHelper = authServiceHelper;
+            _userCreationHelper = userCreationHelper;
         }
         public async Task<Result> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
         {
@@ -46,7 +49,7 @@ namespace Auth_Api.Services
 
             var user = request.Adapt<ApplicationUser>();
 
-            var result = await _authServiceHelper.CreateUserCoreAsync(user, request.Password);
+            var result = await _userCreationHelper.CreateUserCoreAsync(user, request.Password);
 
             if (result.IsSuccess)
             {

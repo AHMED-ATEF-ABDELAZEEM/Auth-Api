@@ -86,6 +86,8 @@ namespace Auth_Api
             builder.Services.AddScoped<ITemporarySessionStore, MemoryTemporarySessionStore>();
             builder.Services.AddScoped<IRefreshTokenHelper, RefreshTokenHelper>();
             builder.Services.AddScoped<IAuthServiceHelper, AuthServiceHelper>();
+            builder.Services.AddScoped<IUserCreationHelper, UserCreationHelper>();
+
             builder.Services.AddTransient<AppDbSeeder>();
 
             builder.Services.AddMemoryCache();

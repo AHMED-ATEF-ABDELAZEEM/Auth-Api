@@ -38,17 +38,20 @@ namespace Auth_Api.Services
         private readonly ILogger<AuthService> _logger;
         private readonly ITemporarySessionStore _temporarySessionStore;
         private readonly IAuthServiceHelper _authServiceHelper;
+        private readonly IUserCreationHelper _userCreationHelper;
         public AuthService(UserManager<ApplicationUser> userManager,
             ILogger<AuthService> logger,
             SignInManager<ApplicationUser> signInManager,
             ITemporarySessionStore temporarySessionStore,
-            IAuthServiceHelper authServiceHelper)
+            IAuthServiceHelper authServiceHelper,
+            IUserCreationHelper userCreationHelper)
         {
             _userManager = userManager;
             _logger = logger;
             _signInManager = signInManager;
             _temporarySessionStore = temporarySessionStore;
             _authServiceHelper = authServiceHelper;
+            _userCreationHelper = userCreationHelper;
         }
 
         public async Task<Result<LoginResponse>> LoginAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -192,7 +195,7 @@ namespace Auth_Api.Services
 
             if (user is null)
             {
-                var createResult = await _authServiceHelper.CreateUserAsync(claims);
+                var createResult = await _userCreationHelper.CreateUserAsync(claims);
 
                 if (createResult.IsSuccess)
                 {
