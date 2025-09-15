@@ -75,10 +75,12 @@ namespace Auth_Api
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IEmailSender, EmailService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IImageProfileService, ImageProfileService>();
+            
             builder.Services.AddScoped<ITemporarySessionStore, MemoryTemporarySessionStore>();
             builder.Services.AddScoped<IRefreshTokenHelper, RefreshTokenHelper>();
             builder.Services.AddScoped<IAuthServiceHelper, AuthServiceHelper>();
-            builder.Services.AddScoped<IImageProfileService, ImageProfileService>();
             builder.Services.AddTransient<AppDbSeeder>();
 
             builder.Services.AddMemoryCache();

@@ -20,12 +20,14 @@ namespace Auth_Api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ITokenService _tokenService;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AuthController(IAuthService authService, SignInManager<ApplicationUser> signInManager)
+        public AuthController(IAuthService authService, SignInManager<ApplicationUser> signInManager, ITokenService tokenService)
         {
             _authService = authService;
             _signInManager = signInManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost("login")]
@@ -47,7 +49,7 @@ namespace Auth_Api.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
-            var result = await _authService.GetRefreshTokenAsync(request.token, request.RefreshToken, cancellationToken);
+            var result = await _tokenService.GetRefreshTokenAsync(request.token, request.RefreshToken, cancellationToken);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
@@ -55,7 +57,7 @@ namespace Auth_Api.Controllers
         [HttpPost("revoke-refresh-token")]
         public async Task<IActionResult> RevokeRefreshToken([FromBody] RefreshTokenRequest Request, CancellationToken cancellationToken)
         {
-            var result = await _authService.RevokeRefreshTokenAsync(Request.token, Request.RefreshToken, cancellationToken);
+            var result = await _tokenService.RevokeRefreshTokenAsync(Request.token, Request.RefreshToken, cancellationToken);
 
             return result.IsSuccess ? NoContent() : BadRequest(result.Error);
         }

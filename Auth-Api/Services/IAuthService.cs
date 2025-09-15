@@ -18,9 +18,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
-using static QRCoder.PayloadGenerator;
 
 namespace Auth_Api.Services
 {
@@ -29,10 +27,6 @@ namespace Auth_Api.Services
         Task<Result<LoginResponse>> LoginAsync (string email,string password,CancellationToken cancellationToken = default);
 
         Task<Result<AuthResponse>> CompleteTwoFactorLoginAsync(string sessionId, string code);
-
-        Task<Result<AuthResponse>> GetRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
-
-        Task<Result> RevokeRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
 
         Task<Result> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default);
 
@@ -181,86 +175,6 @@ namespace Auth_Api.Services
         }
 
 
-        public async Task<Result<AuthResponse>> GetRefreshTokenAsync(string token,string refreshToken,CancellationToken cancellationToken = default)
-        {
-
-            _logger.LogInformation("Starting refresh token process");
-
-            var userId = _jwtProvider.ValidateToken(token);
-            if (userId is null)
-            {
-                _logger.LogWarning("Invalid JWT token provided");
-                return Result.Failure<AuthResponse>(TokenError.InvalidToken);
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user is null)
-            {
-                _logger.LogWarning("User not found for UserId {UserId}", userId);
-                return Result.Failure<AuthResponse>(TokenError.InvalidToken);
-            }
-
-            if (user.LockoutEnd != null && user.LockoutEnd > DateTime.UtcNow)
-            {
-                _logger.LogWarning("Refresh token failed: user is locked out");
-                return Result.Failure<AuthResponse>(UserError.LockedOut);
-            }
-
-            var userRefreshToken = await _refreshTokenHelper.GetActiveRefreshTokenAsync(userId, refreshToken);
-            if (userRefreshToken is null)
-            {
-                _logger.LogWarning("Invalid or inactive refresh token for UserId {UserId}", user.Id);
-                return Result.Failure<AuthResponse>(TokenError.InvalidToken);
-            }
-
-            
-            userRefreshToken.RevokedOn = DateTime.UtcNow;
-            _logger.LogInformation("Revoked old refresh token for UserId {UserId}", user.Id);
-
-            
-            var authResponse = await _authServiceHelper.GenerateAuthResponseAsync(user);
-
-            _logger.LogInformation("Refresh token process completed successfully for UserId {UserId}", user.Id);
-
-            return Result.Success(authResponse);
-        }
-
-
-        public async Task<Result> RevokeRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken = default)
-        {
-            _logger.LogInformation("Starting refresh token revocation process");
-
-            var userId = _jwtProvider.ValidateToken(token);
-            if (userId is null)
-            {
-                _logger.LogWarning("Invalid JWT token provided for revocation");
-                return Result.Failure(TokenError.InvalidToken);
-            }
-
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user is null)
-            {
-                _logger.LogWarning("User not found for UserId {UserId}", userId);
-                return Result.Failure(TokenError.InvalidToken);
-            }
-
-
-            var userRefreshToken = await _refreshTokenHelper.GetActiveRefreshTokenAsync(userId, refreshToken);
-            if (userRefreshToken is null)
-            {
-                _logger.LogWarning("Invalid or inactive refresh token for UserId {UserId}", user.Id);
-                return Result.Failure(TokenError.InvalidToken);
-            }
-
-            userRefreshToken.RevokedOn = DateTime.UtcNow;
-            _context.RefreshTokens.Update(userRefreshToken);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Refresh token revoked successfully for UserId {UserId}", user.Id);
-
-            return Result.Success();
-        }
 
         public async Task<Result> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
         {
