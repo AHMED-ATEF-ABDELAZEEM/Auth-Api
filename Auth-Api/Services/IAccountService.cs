@@ -12,17 +12,14 @@ using QRCoder;
 
 namespace Auth_Api.Services
 {
+
+
     public interface IAccountService
     {
         Task<Result<UserProfileResponse>> GetUserProfileAsync(string userId);
 
         Task<Result> UpdateProfileAsync(string userId, UpdateProfileRequest request);
 
-        Task<Result<byte[]>> GenerateQrCodeAsync(string userId);
-
-        Task<Result> EnableTwoFactorAsync(string userId, string code);
-
-        Task<Result> DisableTwoFactorAsync(string userId, string code);
     }
 
     public class AccountService : IAccountService
@@ -32,14 +29,12 @@ namespace Auth_Api.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AppDbContext _context;
         private readonly ILogger<AccountService> _logger;
-        private readonly IRefreshTokenHelper _refreshTokenHelper;
 
-        public AccountService(AppDbContext context, UserManager<ApplicationUser> userManager, ILogger<AccountService> logger, IRefreshTokenHelper refreshTokenHelper)
+        public AccountService(AppDbContext context, UserManager<ApplicationUser> userManager, ILogger<AccountService> logger)
         {
             _userManager = userManager;
             _context = context;
             _logger = logger;
-            _refreshTokenHelper = refreshTokenHelper;
         }
 
 
@@ -69,115 +64,6 @@ namespace Auth_Api.Services
 
             return Result.Success();
         }
-
-
-        public async Task<Result<byte[]>> GenerateQrCodeAsync(string userId)
-        {
-
-            _logger.LogInformation("Starting 2FA QR setup for user ID: {UserId}", userId);
-
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user!.TwoFactorEnabled)
-            {
-                _logger.LogWarning("2FA QR setup failed: Two-factor authentication already enabled for user ID: {UserId}", userId);
-                return Result.Failure<byte[]>(TwoFactorError.AlreadyEnabled);
-            }
-
-            var key = await _userManager.GetAuthenticatorKeyAsync(user);
-
-            if (string.IsNullOrEmpty(key))
-            {
-                await _userManager.ResetAuthenticatorKeyAsync(user);
-                key = await _userManager.GetAuthenticatorKeyAsync(user);
-            }
-
-            var unformattedKey = key.Replace(" ", "").Replace("-", "");
-            // TODO : Change issuer name at production by your app name
-            var issuer = "Auth App";
-            var email = user.Email;
-            var otpauthUri = $"otpauth://totp/{Uri.EscapeDataString(issuer)}:{Uri.EscapeDataString(email)}?secret={unformattedKey}&issuer={Uri.EscapeDataString(issuer)}&digits=6";
-
-            using var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(otpauthUri, QRCodeGenerator.ECCLevel.Q);
-            var qrCode = new PngByteQRCode(qrCodeData);
-
-            _logger.LogInformation("2FA QR setup completed for user ID: {UserId}", userId);
-
-            return Result.Success(qrCode.GetGraphic(5));
-        }
-        public async Task<Result> EnableTwoFactorAsync(string userId, string code)
-        {
-            _logger.LogInformation("Starting Enable 2FA for user ID: {UserId}", userId);
-
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user.TwoFactorEnabled)
-            {
-                _logger.LogWarning("Enable 2FA failed: already enabled for user ID: {UserId}", user.Id);
-                return Result.Failure(TwoFactorError.AlreadyEnabled);
-            }
-
-            var cleanCode = code.Replace(" ", "").Replace("-", "");
-
-            var isValid = await _userManager.VerifyTwoFactorTokenAsync(
-                user,
-                _userManager.Options.Tokens.AuthenticatorTokenProvider,
-                cleanCode);
-
-            if (!isValid)
-            {
-                _logger.LogWarning("Enable 2FA failed: invalid code for user ID: {UserId}", user.Id);
-                return Result.Failure(TwoFactorError.InvalidCode);
-            }
-
-            await _userManager.SetTwoFactorEnabledAsync(user, true);
-            _logger.LogInformation("2FA enabled successfully for user ID: {UserId}", user.Id);
-
-            await _refreshTokenHelper.RemoveActiveRefreshTokensAsync(userId);
-
-            return Result.Success();
-        }
-
-        public async Task<Result> DisableTwoFactorAsync(string userId, string code)
-        {
-            var user = await _context.Users.FindAsync(userId);
-
-            if (!user!.TwoFactorEnabled)
-            {
-                _logger.LogWarning("2FA already disabled for user ID: {UserId}", userId);
-                return Result.Failure(TwoFactorError.AlreadyDisabled);
-            }
-
-            var cleanCode = code.Replace(" ", "").Replace("-", "");
-
-            var isValid = await _userManager.VerifyTwoFactorTokenAsync(
-                user,
-                _userManager.Options.Tokens.AuthenticatorTokenProvider,
-                cleanCode);
-
-            if (!isValid)
-            {
-                _logger.LogWarning("Disable 2FA failed: invalid code for user ID: {UserId}", user.Id);
-                return Result.Failure(TwoFactorError.InvalidCode);
-            }
-
-            await _userManager.SetTwoFactorEnabledAsync(user, false);
-
-            await _userManager.ResetAuthenticatorKeyAsync(user);
-
-
-            _logger.LogInformation("Start Removing active refresh tokens After 2FA disabled for user: {email}", user.Email);
-
-            await _refreshTokenHelper.RemoveActiveRefreshTokensAsync(userId);
-
-
-            _logger.LogInformation("2FA disabled successfully for user: {Email}", user.Email);
-
-
-            return Result.Success();
-        }
-
 
     }
 }

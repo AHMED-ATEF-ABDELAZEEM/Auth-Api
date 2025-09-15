@@ -20,11 +20,13 @@ namespace Auth_Api.Controllers
         private readonly IAccountService _accountService;
         private readonly IImageProfileService _imageProfileService;
         private readonly IPasswordService _passwordService;
-        public AccountsController(IAccountService accountService, IImageProfileService imageProfileService, IPasswordService passwordService)
+        private readonly ITwoFactorService _twoFactorService;
+        public AccountsController(IAccountService accountService, IImageProfileService imageProfileService, IPasswordService passwordService, ITwoFactorService twoFactorService)
         {
             _accountService = accountService;
             _imageProfileService = imageProfileService;
             _passwordService = passwordService;
+            _twoFactorService = twoFactorService;
         }
 
 
@@ -66,7 +68,7 @@ namespace Auth_Api.Controllers
         public async Task<IActionResult> Get2FaQrCode()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _accountService.GenerateQrCodeAsync(userId!);
+            var result = await _twoFactorService.GenerateQrCodeAsync(userId!);
 
             return result.IsSuccess ? File(result.Value, "image/png") : BadRequest(result.Error);
         }
@@ -76,7 +78,7 @@ namespace Auth_Api.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var result = await _accountService.EnableTwoFactorAsync(userId, request.Code);
+            var result = await _twoFactorService.EnableTwoFactorAsync(userId, request.Code);
 
             return result.IsSuccess ? Ok("2FA enabled successfully") : BadRequest(result.Error);
         }
@@ -86,7 +88,7 @@ namespace Auth_Api.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var result = await _accountService.DisableTwoFactorAsync(userId, request.Code);
+            var result = await _twoFactorService.DisableTwoFactorAsync(userId, request.Code);
 
             return result.IsSuccess ? Ok("2FA disabled successfully") : BadRequest(result.Error);
         }
