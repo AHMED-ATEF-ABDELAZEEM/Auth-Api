@@ -1,4 +1,5 @@
-﻿using Auth_Api.Contracts.Account.Responses;
+﻿using Auth_Api.Consts;
+using Auth_Api.Contracts.Account.Responses;
 using Auth_Api.Contracts.Auth.Requests;
 using Auth_Api.Models;
 using Mapster;
@@ -17,6 +18,10 @@ namespace Auth_Api.Mapping
 
             config.NewConfig< ApplicationUser,UserProfileResponse>()
                 .Map(dest => dest.HasPassword, src => src.PasswordHash != null);
+
+            config.NewConfig<ApplicationUser, UserProfileResponse>()
+                .Map(dest => dest.ImageProfileUrl, 
+                src => string.IsNullOrEmpty(src.ImageProfile) ? null : $"/{ImageProfileSettings.StoredFolderName}/{src.ImageProfile}");
         }
     }
 }

@@ -7,5 +7,7 @@
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public bool HasPassword { get; set; }
+
+        public string? ImageProfileUrl { get; set; } = string.Empty;
     }
 }
