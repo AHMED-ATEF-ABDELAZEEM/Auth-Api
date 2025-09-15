@@ -78,6 +78,7 @@ namespace Auth_Api
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IPasswordService, PasswordService>();
             builder.Services.AddScoped<ITwoFactorService, TwoFactorService>();
+            builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 
 
             builder.Services.AddScoped<IImageProfileService, ImageProfileService>();

@@ -22,14 +22,16 @@ namespace Auth_Api.Controllers
         private readonly IAuthService _authService;
         private readonly ITokenService _tokenService;
         private readonly IPasswordService _passwordService;
+        private readonly IRegistrationService _registrationService;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AuthController(IAuthService authService, SignInManager<ApplicationUser> signInManager, ITokenService tokenService, IPasswordService passwordService)
+        public AuthController(IAuthService authService, SignInManager<ApplicationUser> signInManager, ITokenService tokenService, IPasswordService passwordService, IRegistrationService registrationService)
         {
             _authService = authService;
             _signInManager = signInManager;
             _tokenService = tokenService;
             _passwordService = passwordService;
+            _registrationService = registrationService;
         }
 
         [HttpPost("login")]
@@ -68,7 +70,7 @@ namespace Auth_Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
         {
-            var result = await _authService.RegisterAsync(request, cancellationToken);
+            var result = await _registrationService.RegisterAsync(request, cancellationToken);
 
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
@@ -76,7 +78,7 @@ namespace Auth_Api.Controllers
         [HttpPost("confirm-email")]
         public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
         {
-            var result = await _authService.ConfirmEmailAsync(request);
+            var result = await _registrationService.ConfirmEmailAsync(request);
 
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
@@ -84,7 +86,7 @@ namespace Auth_Api.Controllers
         [HttpPost("resend-confirmation-email")]
         public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailRequest request, CancellationToken cancellationToken)
         {
-            var result = await _authService.ResendConfirmationEmailAsync(request);
+            var result = await _registrationService.ResendConfirmationEmailAsync(request);
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
 
