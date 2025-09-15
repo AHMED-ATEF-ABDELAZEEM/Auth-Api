@@ -97,7 +97,7 @@ namespace Auth_Api.Controllers
 
             var result = await _imageProfileService.UploadProfileImageAsync(userId, Image, cancellationToken);
 
-            return result.IsSuccess ? Ok("Uploaded successfully") : BadRequest(result.Error);
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
 
         [HttpDelete("profile-image")]

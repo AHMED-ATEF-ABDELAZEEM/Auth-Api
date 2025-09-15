@@ -9,7 +9,7 @@ namespace Auth_Api.Services
 
     public interface IImageProfileService
     {
-        Task<Result> UploadProfileImageAsync(string userId, IFormFile Image, CancellationToken cancellationToken = default);
+        Task<Result<string>> UploadProfileImageAsync(string userId, IFormFile Image, CancellationToken cancellationToken = default);
 
         Task<Result> RemoveProfileImageAsync(string userId, CancellationToken cancellationToken = default);
     }
@@ -24,7 +24,7 @@ namespace Auth_Api.Services
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
-            _imagesPath = $"{_webHostEnvironment.ContentRootPath}/Data/ProfileImages";
+            _imagesPath = $"{_webHostEnvironment.WebRootPath}/{ImageProfileSettings.StoredFolderName}";
 
             if (!Directory.Exists(_imagesPath))
             {
@@ -60,7 +60,7 @@ namespace Auth_Api.Services
 
         }
 
-        public async Task<Result> UploadProfileImageAsync(string userId, IFormFile Image, CancellationToken cancellationToken = default)
+        public async Task<Result<string>> UploadProfileImageAsync(string userId, IFormFile Image, CancellationToken cancellationToken = default)
         {
 
             _logger.LogInformation("Starting Upload profile image for user ID: {UserId}", userId);
@@ -69,7 +69,7 @@ namespace Auth_Api.Services
             if (Image.Length > ImageProfileSettings.MaxFileSizeInBytes)
             {
                 _logger.LogWarning("Upload profile image failed: File size is too large for user ID: {UserId}", userId);
-                return Result.Failure(ImageProfileError.ImageTooLarge);
+                return Result.Failure<string>(ImageProfileError.ImageTooLarge);
             }
 
             using BinaryReader binaryReader = new(Image.OpenReadStream());
@@ -78,7 +78,7 @@ namespace Auth_Api.Services
             if (!ImageProfileSettings.AllowedSignatures.Contains(fileSequenceHex, StringComparer.OrdinalIgnoreCase))
             {
                 _logger.LogWarning("Upload profile image failed: File type is not allowed for user ID: {UserId}", userId);
-                return Result.Failure(ImageProfileError.InvalidExtension);
+                return Result.Failure<string>(ImageProfileError.InvalidExtension);
             }
 
 
@@ -106,11 +106,11 @@ namespace Auth_Api.Services
             user.ImageProfile = uniqueFileName;
             await _context.SaveChangesAsync(cancellationToken);
 
-            var imageUrl = $"/ProfileImages/{uniqueFileName}";
+            var imageUrl = $"/{ImageProfileSettings.StoredFolderName}/{uniqueFileName}";
 
             _logger.LogInformation("Profile image uploaded successfully for user ID: {UserId}", userId);
 
-            return Result.Success();
+            return Result.Success(imageUrl);
         }
 
 

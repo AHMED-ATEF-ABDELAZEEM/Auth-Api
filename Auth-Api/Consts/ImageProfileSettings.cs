@@ -2,6 +2,9 @@
 {
     public static class ImageProfileSettings
     {
+
+        public const string StoredFolderName = "ImageProfile";
+
         public const int MaxFileSizeInMB = 1;
         public const int MaxFileSizeInBytes = MaxFileSizeInMB * 1024 * 1024;
         public static readonly string[] AllowedSignatures =

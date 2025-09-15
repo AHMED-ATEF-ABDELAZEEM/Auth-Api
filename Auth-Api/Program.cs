@@ -232,6 +232,7 @@ namespace Auth_Api
 
             app.UseExceptionHandler();
 
+            app.UseStaticFiles();
 
             app.Run();
         }
